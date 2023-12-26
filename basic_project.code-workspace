@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "path": "."
+    },
+    {
+      "path": "../frontend"
+    },
+    {
+      "path": "../fnk-auth"
+    }
+  ],
+  "settings": {}
+}
