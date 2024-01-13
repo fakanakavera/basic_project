@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import sys
+import os
 sys.path.append('K:\\repos\\')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -67,7 +68,7 @@ ROOT_URLCONF = 'basic_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -88,8 +89,12 @@ WSGI_APPLICATION = 'basic_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'basic_database',     # Your database name
+        'USER': 'postgres',         # Your database user
+        'PASSWORD': '1234',  # Your database password
+        'HOST': '127.0.0.1',
+        'PORT': '5432',           # PostgreSQL port (5432 is the default)
     }
 }
 
@@ -124,6 +129,10 @@ USE_I18N = True
 
 USE_TZ = True
 
+EMAIL_HOST_USER = 'test.email.send.666@gmail.com'
+EMAIL_HOST_PASSWORD = 'syoj dcjk ejlu lypo'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587  # For TLS connection
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
