@@ -134,6 +134,8 @@ EMAIL_HOST_PASSWORD = 'syoj dcjk ejlu lypo'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587  # For TLS connection
 
+GOOGLE_RECAPTCHA_SECRET_KEY = '6LfkClApAAAAAI1GeReoy1Pqtjptd7fjejgpqaGz'
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
