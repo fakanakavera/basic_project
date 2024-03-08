@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'fnk_auth',
+    'f1_telemetry',
 ]
 
 MIDDLEWARE = [
