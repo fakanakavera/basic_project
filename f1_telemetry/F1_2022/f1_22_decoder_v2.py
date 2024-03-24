@@ -12,10 +12,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'basic_project.settings')
 # Initialize Django
 django.setup()
 
-from ..models import Header, CarMotion, Lap, CarSetup, Participant, CarTelemetry, Log, PacketSession
+from ..models import Header, CarMotion, Lap, CarSetup, Participant, CarTelemetry
 
-results = Lap.objects.filter(currentLapNum=2,header__cartelemetry__isnull=False).select_related('header').prefetch_related('header__cartelemetry')
-class f1_22_decoder:
+class f1_22_decoder_v2:
     def __init__(self):
         self.UDP_IP = "127.0.0.1"  # UDP listen IP-address
         self.UDP_PORT = 20777  # UDP listen port
@@ -59,35 +58,13 @@ class f1_22_decoder:
             try:
                 # add a header to the database if it doesn't exist, we need to check both sessionUID and sessionTime
 
-                # self.header_instance, created = Header.objects.get_or_create(
-                #     sessionUID=header_data[5][1], sessionTime=header_data[6][1])
                 self.header_instance, created = Header.objects.get_or_create(
-                    packetFormat=header_data[0][1],
-                    gameMajorVersion=header_data[1][1],
-                    gameMinorVersion=header_data[2][1],
-                    packetVersion=header_data[3][1],
-                    packetId=header_data[4][1],
-                    sessionUID=header_data[5][1],
-                    sessionTime=header_data[6][1],
-                    frameIdentifier=header_data[7][1],
-                    playerCarIndex=header_data[8][1],
-                    secondaryPlayerCarIndex=header_data[9][1]
-                )
-    #             packetFormat = models.PositiveSmallIntegerField()
-    # gameMajorVersion = models.PositiveSmallIntegerField()
-    # gameMinorVersion = models.PositiveSmallIntegerField()
-    # packetVersion = models.PositiveSmallIntegerField()
-    # packetId = models.PositiveSmallIntegerField()
-    # sessionUID = models.DecimalField(max_digits=22, decimal_places=0, unique=False)
-    # sessionTime = models.FloatField()
-    # frameIdentifier = models.PositiveIntegerField()
-    # playerCarIndex = models.PositiveSmallIntegerField()
-    # secondaryPlayerCarIndex = models.PositiveSmallIntegerField()
+                    sessionUID=header_data[5][1], sessionTime=header_data[6][1])
                 self.header_instance.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{header_data}")
+                print(f"Error adding header: {e}")
                 print(header_data[6][1])
-                #time.sleep(1)
+                time.sleep(1)
 
         if header_data[4][1] == 0:
             self.decode_packet_0(data)
@@ -123,8 +100,9 @@ class f1_22_decoder:
                     roll=CarMotionData[17][1])
                 carmotion.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{CarMotionData}")
-
+                print(self.header_instance)
+                print(f"Error adding header: {e}")
+                time.sleep(1)
 
     def decode_packet_1(self, data):
         #os.system('cls')
@@ -135,58 +113,6 @@ class f1_22_decoder:
 
             self.index += self.size
 
-        if self.save_all:
-            try:
-                packet_session, _ = PacketSession.objects.get_or_create(header=self.header_instance,
-                    weather=PacketSession[0][1], 
-                    trackTemperature=PacketSession[1][1], 
-                    airTemperature=PacketSession[2][1], 
-                    totalLaps=PacketSession[3][1], 
-                    trackLength=PacketSession[4][1], 
-                    sessionType=PacketSession[5][1], 
-                    trackId=PacketSession[6][1], 
-                    formula=PacketSession[7][1], 
-                    sessionTimeLeft=PacketSession[8][1], 
-                    sessionDuration=PacketSession[9][1], 
-                    pitSpeedLimit=PacketSession[10][1], 
-                    gamePaused=PacketSession[11][1], 
-                    isSpectating=PacketSession[12][1], 
-                    spectatorCarIndex=PacketSession[13][1], 
-                    sliProNativeSupport=PacketSession[14][1],
-                    numMarshalZones=PacketSession[15][1],
-                    zoneStart=PacketSession[16][1],
-                    zoneFlag=PacketSession[17][1],
-                    safetyCarStatus=PacketSession[18][1],
-                    networkGame=PacketSession[19][1],
-                    numWeatherForecastSamples=PacketSession[20][1],
-                    timeOffset=PacketSession[21][1],
-                    trackTemperatureChange=PacketSession[22][1],
-                    airTemperatureChange=PacketSession[23][1],
-                    rainPercentage=PacketSession[24][1],
-                    forecastAccuracy=PacketSession[25][1],
-                    aiDifficulty=PacketSession[26][1],
-                    seasonLinkIdentifier=PacketSession[27][1],
-                    weekendLinkIdentifier=PacketSession[28][1],
-                    sessionLinkIdentifier=PacketSession[29][1],
-                    pitStopWindowIdealLap=PacketSession[30][1],
-                    pitStopWindowLatestLap=PacketSession[31][1],
-                    pitStopRejoinPosition=PacketSession[32][1],
-                    steeringAssist=PacketSession[33][1],
-                    brakingAssist=PacketSession[34][1],
-                    gearboxAssist=PacketSession[35][1],
-                    pitAssist=PacketSession[36][1],
-                    pitReleaseAssist=PacketSession[37][1],
-                    ERSAssist=PacketSession[38][1],
-                    DRSAssist=PacketSession[39][1],
-                    dynamicRacingLine=PacketSession[40][1],
-                    dynamicRacingLineType=PacketSession[41][1],
-                    gameMode=PacketSession[42][1],
-                    ruleSet=PacketSession[43][1],
-                    timeOfDay=PacketSession[44][1],
-                    sessionLength=PacketSession[45][1])
-                packet_session.save()
-            except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{PacketSessionData}")
 
     def decode_packet_2(self, data):
         # os.system('cls')
@@ -206,11 +132,12 @@ class f1_22_decoder:
                     sector1TimeInMS=LapData[2][1], 
                     sector2TimeInMS=LapData[3][1], 
                     lapDistance=LapData[4][1], 
-                    totalDistance=LapData[5][1],
-                    currentLapNum=LapData[8][1])
+                    totalDistance=LapData[5][1])
                 lap.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{LapData}")
+                print(self.header_instance)
+                print(f"Error adding header: {e}")
+                time.sleep(1)
 
     def decode_packet_4(self, data):
         # os.system('cls')
@@ -245,7 +172,9 @@ class f1_22_decoder:
                         teamId=ParticipantsData[4][1])
                     self.participant.save()
                 except Exception as e:
-                    Log.objects.create(event_type="Error", message=f" {e}\n{ParticipantsData}")
+                    print(self.header_instance)
+                    print(f"Error adding header: {e}")
+                    time.sleep(1)
 
     def decode_packet_5(self, data):
         # os.system('cls')
@@ -284,7 +213,9 @@ class f1_22_decoder:
                     fuelLoad=CarSetupData[21][1])
                 carsetup.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{CarSetupData}")
+                print(self.header_instance)
+                print(f"Error adding header: {e}")
+                time.sleep(1)
 
     def decode_packet_6(self, data):
         # os.system('cls')
@@ -339,7 +270,9 @@ class f1_22_decoder:
 
                     car_telemetry.save()
                 except Exception as e:
-                    Log.objects.create(event_type="Error", message=f" {e}\n{CarTelemetryData}")
+                    print(self.header_instance)
+                    print(f"Error adding header: {e}")
+                    time.sleep(1)
             
 
     def decoder_loop(self):

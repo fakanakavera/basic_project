@@ -42,6 +42,10 @@ def initArray():
     CarMotionData.append(['m_pitch', 0, 'f'])               #16
     CarMotionData.append(['m_roll', 0, 'f'])                #17
 
+    
+    
+    
+    
     PacketSessionData.append(['m_weather', 0, 'uint8'])
     PacketSessionData.append(['m_trackTemperature', 0, 'int8'])
     PacketSessionData.append(['m_airTemperature', 0, 'int8'])

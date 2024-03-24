@@ -4,8 +4,16 @@ from django.db import models
 
 
 class Header(models.Model):
-    sessionUID = models.DecimalField(max_digits=22, decimal_places=0, unique=False) #header_data[5]
-    sessionTime = models.FloatField()                                               #header_data[6]
+    packetFormat = models.PositiveSmallIntegerField()
+    gameMajorVersion = models.PositiveSmallIntegerField()
+    gameMinorVersion = models.PositiveSmallIntegerField()
+    packetVersion = models.PositiveSmallIntegerField()
+    packetId = models.PositiveSmallIntegerField()
+    sessionUID = models.DecimalField(max_digits=22, decimal_places=0, unique=False)
+    sessionTime = models.FloatField()
+    frameIdentifier = models.PositiveIntegerField()
+    playerCarIndex = models.PositiveSmallIntegerField()
+    secondaryPlayerCarIndex = models.PositiveSmallIntegerField()
     
     def __str__(self):
         return f"{self.sessionUID}-{self.sessionTime}"
@@ -13,25 +21,87 @@ class Header(models.Model):
 
 class CarMotion(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    worldPositionX = models.FloatField()
+    worldPositionY = models.FloatField()
+    worldPositionZ = models.FloatField()
+    worldVelocityX = models.FloatField()
+    worldVelocityY = models.FloatField()
+    worldVelocityZ = models.FloatField()
+    worldForwardDirX = models.PositiveSmallIntegerField()
+    worldForwardDirY = models.PositiveSmallIntegerField()
+    worldForwardDirZ = models.PositiveSmallIntegerField()
+    worldRightDirX = models.PositiveSmallIntegerField()
+    worldRightDirY = models.PositiveSmallIntegerField()
+    worldRightDirZ = models.PositiveSmallIntegerField()
     gForceLateral = models.FloatField()
     gForceLongitudinal = models.FloatField()
     gForceVertical = models.FloatField()
     yaw = models.FloatField()
     pitch = models.FloatField()
     roll = models.FloatField()
+
     
     def __str__(self):
         return f"{self.header}-{self.gForceLateral}-{self.gForceLongitudinal}-{self.gForceVertical}-{self.yaw}-{self.pitch}-{self.roll}"
 
-
+class PacketSession(models.Model):
+    header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    m_weather = models.IntegerField()
+    m_trackTemperature = models.IntegerField()
+    m_airTemperature = models.IntegerField()
+    m_totalLaps = models.IntegerField()
+    m_trackLength = models.IntegerField()
+    m_sessionType = models.IntegerField()
+    m_trackId = models.IntegerField()
+    m_formula = models.IntegerField()
+    m_sessionTimeLeft = models.IntegerField()
+    m_sessionDuration = models.IntegerField()
+    m_pitSpeedLimit = models.IntegerField()
+    m_gamePaused = models.IntegerField()
+    m_isSpectating = models.IntegerField()
+    m_spectatorCarIndex = models.IntegerField()
+    m_sliProNativeSupport = models.IntegerField()
+    m_numMarshalZones = models.IntegerField()
+    m_zoneStart = models.FloatField()
+    m_zoneFlag = models.IntegerField()
+    m_safetyCarStatus = models.IntegerField()
+    m_networkGame = models.IntegerField()
+    m_numWeatherForecastSamples = models.IntegerField()
+    m_timeOffset = models.IntegerField()
+    m_trackTemperatureChange = models.IntegerField()
+    m_airTemperatureChange = models.IntegerField()
+    m_rainPercentage = models.IntegerField()
+    m_forecastAccuracy = models.IntegerField()
+    m_aiDifficulty = models.IntegerField()
+    m_seasonLinkIdentifier = models.PositiveIntegerField()
+    m_weekendLinkIdentifier = models.PositiveIntegerField()
+    m_sessionLinkIdentifier = models.PositiveIntegerField()
+    m_pitStopWindowIdealLap = models.IntegerField()
+    m_pitStopWindowLatestLap = models.IntegerField()
+    m_pitStopRejoinPosition = models.IntegerField()
+    m_steeringAssist = models.IntegerField()
+    m_brakingAssist = models.IntegerField()
+    m_gearboxAssist = models.IntegerField()
+    m_pitAssist = models.IntegerField()
+    m_pitReleaseAssist = models.IntegerField()
+    m_ERSAssist = models.IntegerField()
+    m_DRSAssist = models.IntegerField()
+    m_dynamicRacingLine = models.IntegerField()
+    m_dynamicRacingLineType = models.IntegerField()
+    m_gameMode = models.IntegerField()
+    m_ruleSet = models.IntegerField()
+    m_timeOfDay = models.PositiveIntegerField()
+    m_sessionLength = models.IntegerField()
+    
 class Lap(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    lastLapTimeInMS = models.PositiveIntegerField()     #0
-    currentLapTimeInMS = models.PositiveIntegerField()  #1
-    sector1TimeInMS = models.PositiveSmallIntegerField()#2
-    sector2TimeInMS = models.PositiveSmallIntegerField()#3
-    lapDistance = models.FloatField()                   #4
-    totalDistance = models.FloatField()                 #5
+    lastLapTimeInMS = models.PositiveIntegerField()                 #0
+    currentLapTimeInMS = models.PositiveIntegerField()              #1
+    sector1TimeInMS = models.PositiveSmallIntegerField()            #2
+    sector2TimeInMS = models.PositiveSmallIntegerField()            #3
+    lapDistance = models.FloatField()                               #4
+    totalDistance = models.FloatField()                             #5
+    currentLapNum = models.PositiveSmallIntegerField(default=9999)  #6
 
 
 class CarSetup(models.Model):
@@ -98,3 +168,14 @@ class CarTelemetry(models.Model):
     surfaceTypeRL = models.PositiveSmallIntegerField()
     surfaceTypeFL = models.PositiveSmallIntegerField()
     surfaceTypeFR = models.PositiveSmallIntegerField()
+
+
+
+
+class Log(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    event_type = models.CharField(max_length=100)
+    message = models.TextField()
+
+    def __str__(self):
+        return f"{self.created_at} - {self.event_type}"
