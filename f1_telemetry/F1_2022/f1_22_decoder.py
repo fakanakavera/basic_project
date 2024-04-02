@@ -73,16 +73,7 @@ class f1_22_decoder:
                     playerCarIndex=header_data[8][1],
                     secondaryPlayerCarIndex=header_data[9][1]
                 )
-    #             packetFormat = models.PositiveSmallIntegerField()
-    # gameMajorVersion = models.PositiveSmallIntegerField()
-    # gameMinorVersion = models.PositiveSmallIntegerField()
-    # packetVersion = models.PositiveSmallIntegerField()
-    # packetId = models.PositiveSmallIntegerField()
-    # sessionUID = models.DecimalField(max_digits=22, decimal_places=0, unique=False)
-    # sessionTime = models.FloatField()
-    # frameIdentifier = models.PositiveIntegerField()
-    # playerCarIndex = models.PositiveSmallIntegerField()
-    # secondaryPlayerCarIndex = models.PositiveSmallIntegerField()
+
                 self.header_instance.save()
             except Exception as e:
                 Log.objects.create(event_type="Error", message=f" {e}\n{header_data}")
@@ -200,6 +191,7 @@ class f1_22_decoder:
         
         if self.save_all or self.save_lap:
             try:
+                os.system('cls')
                 lap, _ = Lap.objects.get_or_create(header=self.header_instance,
                     lastLapTimeInMS=LapData[0][1], 
                     currentLapTimeInMS=LapData[1][1], 
@@ -209,8 +201,11 @@ class f1_22_decoder:
                     totalDistance=LapData[5][1],
                     currentLapNum=LapData[8][1])
                 lap.save()
+                for x in range(0, len(LapData)):
+                    print(LapData[x][0], ': ', LapData[x][1])
             except Exception as e:
                 Log.objects.create(event_type="Error", message=f" {e}\n{LapData}")
+                print(f" {e}\n{LapData}")
 
     def decode_packet_4(self, data):
         # os.system('cls')

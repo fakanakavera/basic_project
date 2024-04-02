@@ -27,12 +27,12 @@ class CarMotion(models.Model):
     worldVelocityX = models.FloatField()
     worldVelocityY = models.FloatField()
     worldVelocityZ = models.FloatField()
-    worldForwardDirX = models.PositiveSmallIntegerField()
-    worldForwardDirY = models.PositiveSmallIntegerField()
-    worldForwardDirZ = models.PositiveSmallIntegerField()
-    worldRightDirX = models.PositiveSmallIntegerField()
-    worldRightDirY = models.PositiveSmallIntegerField()
-    worldRightDirZ = models.PositiveSmallIntegerField()
+    worldForwardDirX = models.PositiveSmallIntegerField(null=True)
+    worldForwardDirY = models.PositiveSmallIntegerField(null=True)
+    worldForwardDirZ = models.PositiveSmallIntegerField(null=True)
+    worldRightDirX = models.PositiveSmallIntegerField(null=True)
+    worldRightDirY = models.PositiveSmallIntegerField(null=True)
+    worldRightDirZ = models.PositiveSmallIntegerField(null=True)
     gForceLateral = models.FloatField()
     gForceLongitudinal = models.FloatField()
     gForceVertical = models.FloatField()
@@ -95,13 +95,31 @@ class PacketSession(models.Model):
     
 class Lap(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    lastLapTimeInMS = models.PositiveIntegerField()                 #0
-    currentLapTimeInMS = models.PositiveIntegerField()              #1
-    sector1TimeInMS = models.PositiveSmallIntegerField()            #2
-    sector2TimeInMS = models.PositiveSmallIntegerField()            #3
-    lapDistance = models.FloatField()                               #4
-    totalDistance = models.FloatField()                             #5
-    currentLapNum = models.PositiveSmallIntegerField(default=9999)  #6
+    lastLapTimeInMS = models.PositiveIntegerField()                     #0
+    currentLapTimeInMS = models.PositiveIntegerField()                  #1
+    sector1TimeInMS = models.PositiveIntegerField()                     #2
+    sector2TimeInMS = models.PositiveIntegerField()                     #3
+    lapDistance = models.FloatField()                                   #4
+    totalDistance = models.FloatField()                                 #5
+    safetyCarDelta = models.FloatField()                                #6
+    carPosition = models.PositiveSmallIntegerField()                    #7
+    currentLapNum = models.PositiveSmallIntegerField()                  #8
+    pitStatus = models.PositiveSmallIntegerField()                      #9
+    numPitStops = models.PositiveSmallIntegerField()                    #10
+    sector = models.PositiveSmallIntegerField()                         #11
+    currentLapInvalid = models.PositiveSmallIntegerField()              #12
+    penalties = models.PositiveSmallIntegerField()                      #13
+    warnings = models.PositiveSmallIntegerField()                       #14
+    numUnservedDriveThroughPens = models.PositiveSmallIntegerField()    #15
+    numUnservedStopGoPens = models.PositiveSmallIntegerField()          #16
+    gridPosition = models.PositiveSmallIntegerField()                   #17
+    driverStatus = models.PositiveSmallIntegerField()                   #18
+    resultStatus = models.PositiveSmallIntegerField()                   #19
+    pitLaneTimerActive = models.PositiveSmallIntegerField()             #20
+    pitLaneTimeInLaneInMS = models.PositiveIntegerField()               #21
+    pitStopTimerInMS = models.PositiveIntegerField()                    #22
+    pitStopShouldServePen = models.PositiveSmallIntegerField()          #23
+
 
 
 class CarSetup(models.Model):
@@ -130,9 +148,17 @@ class CarSetup(models.Model):
     fuelLoad = models.FloatField()
 
 class Participant(models.Model):
+    header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    numActiveCars = models.PositiveSmallIntegerField()
     aiControlled = models.BooleanField()
     driverId = models.PositiveSmallIntegerField(default=9999)
+    networkId = models.PositiveSmallIntegerField()
     teamId = models.PositiveSmallIntegerField()
+    myTeam = models.BooleanField()
+    raceNumber = models.PositiveSmallIntegerField()
+    nationality = models.PositiveSmallIntegerField()
+    name = models.CharField(max_length=100)
+    yourTelemetry = models.BooleanField()
 
 class CarTelemetry(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
