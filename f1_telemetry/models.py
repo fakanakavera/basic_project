@@ -4,16 +4,16 @@ from django.db import models
 
 
 class Header(models.Model):
-    packetFormat = models.PositiveSmallIntegerField()
-    gameMajorVersion = models.PositiveSmallIntegerField()
-    gameMinorVersion = models.PositiveSmallIntegerField()
-    packetVersion = models.PositiveSmallIntegerField()
-    packetId = models.PositiveSmallIntegerField()
+    packetFormat = models.PositiveSmallIntegerField(default=0)
+    gameMajorVersion = models.PositiveSmallIntegerField(default=0)
+    gameMinorVersion = models.PositiveSmallIntegerField(default=0)
+    packetVersion = models.PositiveSmallIntegerField(default=0)
+    packetId = models.PositiveSmallIntegerField(default=0)
     sessionUID = models.DecimalField(max_digits=22, decimal_places=0, unique=False)
-    sessionTime = models.FloatField()
-    frameIdentifier = models.PositiveIntegerField()
-    playerCarIndex = models.PositiveSmallIntegerField()
-    secondaryPlayerCarIndex = models.PositiveSmallIntegerField()
+    sessionTime = models.FloatField(default=0.0)
+    frameIdentifier = models.PositiveIntegerField(default=0)
+    playerCarIndex = models.PositiveSmallIntegerField(default=0)
+    secondaryPlayerCarIndex = models.PositiveSmallIntegerField(default=0)
     
     def __str__(self):
         return f"{self.sessionUID}-{self.sessionTime}"
@@ -21,24 +21,24 @@ class Header(models.Model):
 
 class CarMotion(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    worldPositionX = models.FloatField()
-    worldPositionY = models.FloatField()
-    worldPositionZ = models.FloatField()
-    worldVelocityX = models.FloatField()
-    worldVelocityY = models.FloatField()
-    worldVelocityZ = models.FloatField()
-    worldForwardDirX = models.PositiveSmallIntegerField(null=True)
-    worldForwardDirY = models.PositiveSmallIntegerField(null=True)
-    worldForwardDirZ = models.PositiveSmallIntegerField(null=True)
-    worldRightDirX = models.PositiveSmallIntegerField(null=True)
-    worldRightDirY = models.PositiveSmallIntegerField(null=True)
-    worldRightDirZ = models.PositiveSmallIntegerField(null=True)
-    gForceLateral = models.FloatField()
-    gForceLongitudinal = models.FloatField()
-    gForceVertical = models.FloatField()
-    yaw = models.FloatField()
-    pitch = models.FloatField()
-    roll = models.FloatField()
+    worldPositionX = models.FloatField(default=0.0)
+    worldPositionY = models.FloatField(default=0.0)
+    worldPositionZ = models.FloatField(default=0.0)
+    worldVelocityX = models.FloatField(default=0.0)
+    worldVelocityY = models.FloatField(default=0.0)
+    worldVelocityZ = models.FloatField(default=0.0)
+    worldForwardDirX = models.PositiveSmallIntegerField(default=0, null=True)
+    worldForwardDirY = models.PositiveSmallIntegerField(default=0, null=True)
+    worldForwardDirZ = models.PositiveSmallIntegerField(default=0, null=True)
+    worldRightDirX = models.PositiveSmallIntegerField(default=0, null=True)
+    worldRightDirY = models.PositiveSmallIntegerField(default=0, null=True)
+    worldRightDirZ = models.PositiveSmallIntegerField(default=0, null=True)
+    gForceLateral = models.FloatField(default=0.0)
+    gForceLongitudinal = models.FloatField(default=0.0)
+    gForceVertical = models.FloatField(default=0.0)
+    yaw = models.FloatField(default=0.0)
+    pitch = models.FloatField(default=0.0)
+    roll = models.FloatField(default=0.0)
 
     
     def __str__(self):
@@ -46,154 +46,154 @@ class CarMotion(models.Model):
 
 class PacketSession(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    m_weather = models.IntegerField()
-    m_trackTemperature = models.IntegerField()
-    m_airTemperature = models.IntegerField()
-    m_totalLaps = models.IntegerField()
-    m_trackLength = models.IntegerField()
-    m_sessionType = models.IntegerField()
-    m_trackId = models.IntegerField()
-    m_formula = models.IntegerField()
-    m_sessionTimeLeft = models.IntegerField()
-    m_sessionDuration = models.IntegerField()
-    m_pitSpeedLimit = models.IntegerField()
-    m_gamePaused = models.IntegerField()
-    m_isSpectating = models.IntegerField()
-    m_spectatorCarIndex = models.IntegerField()
-    m_sliProNativeSupport = models.IntegerField()
-    m_numMarshalZones = models.IntegerField()
-    m_zoneStart = models.FloatField()
-    m_zoneFlag = models.IntegerField()
-    m_safetyCarStatus = models.IntegerField()
-    m_networkGame = models.IntegerField()
-    m_numWeatherForecastSamples = models.IntegerField()
-    m_timeOffset = models.IntegerField()
-    m_trackTemperatureChange = models.IntegerField()
-    m_airTemperatureChange = models.IntegerField()
-    m_rainPercentage = models.IntegerField()
-    m_forecastAccuracy = models.IntegerField()
-    m_aiDifficulty = models.IntegerField()
-    m_seasonLinkIdentifier = models.PositiveIntegerField()
-    m_weekendLinkIdentifier = models.PositiveIntegerField()
-    m_sessionLinkIdentifier = models.PositiveIntegerField()
-    m_pitStopWindowIdealLap = models.IntegerField()
-    m_pitStopWindowLatestLap = models.IntegerField()
-    m_pitStopRejoinPosition = models.IntegerField()
-    m_steeringAssist = models.IntegerField()
-    m_brakingAssist = models.IntegerField()
-    m_gearboxAssist = models.IntegerField()
-    m_pitAssist = models.IntegerField()
-    m_pitReleaseAssist = models.IntegerField()
-    m_ERSAssist = models.IntegerField()
-    m_DRSAssist = models.IntegerField()
-    m_dynamicRacingLine = models.IntegerField()
-    m_dynamicRacingLineType = models.IntegerField()
-    m_gameMode = models.IntegerField()
-    m_ruleSet = models.IntegerField()
-    m_timeOfDay = models.PositiveIntegerField()
-    m_sessionLength = models.IntegerField()
+    m_weather = models.IntegerField(default=0)
+    m_trackTemperature = models.IntegerField(default=0)
+    m_airTemperature = models.IntegerField(default=0)
+    m_totalLaps = models.IntegerField(default=0)
+    m_trackLength = models.IntegerField(default=0)
+    m_sessionType = models.IntegerField(default=0)
+    m_trackId = models.IntegerField(default=0)
+    m_formula = models.IntegerField(default=0)
+    m_sessionTimeLeft = models.IntegerField(default=0)
+    m_sessionDuration = models.IntegerField(default=0)
+    m_pitSpeedLimit = models.IntegerField(default=0)
+    m_gamePaused = models.IntegerField(default=0)
+    m_isSpectating = models.IntegerField(default=0)
+    m_spectatorCarIndex = models.IntegerField(default=0)
+    m_sliProNativeSupport = models.IntegerField(default=0)
+    m_numMarshalZones = models.IntegerField(default=0)
+    m_zoneStart = models.FloatField(default=0.0)
+    m_zoneFlag = models.IntegerField(default=0)
+    m_safetyCarStatus = models.IntegerField(default=0)
+    m_networkGame = models.IntegerField(default=0)
+    m_numWeatherForecastSamples = models.IntegerField(default=0)
+    m_timeOffset = models.IntegerField(default=0)
+    m_trackTemperatureChange = models.IntegerField(default=0)
+    m_airTemperatureChange = models.IntegerField(default=0)
+    m_rainPercentage = models.IntegerField(default=0)
+    m_forecastAccuracy = models.IntegerField(default=0)
+    m_aiDifficulty = models.IntegerField(default=0)
+    m_seasonLinkIdentifier = models.PositiveIntegerField(default=0)
+    m_weekendLinkIdentifier = models.PositiveIntegerField(default=0)
+    m_sessionLinkIdentifier = models.PositiveIntegerField(default=0)
+    m_pitStopWindowIdealLap = models.IntegerField(default=0)
+    m_pitStopWindowLatestLap = models.IntegerField(default=0)
+    m_pitStopRejoinPosition = models.IntegerField(default=0)
+    m_steeringAssist = models.IntegerField(default=0)
+    m_brakingAssist = models.IntegerField(default=0)
+    m_gearboxAssist = models.IntegerField(default=0)
+    m_pitAssist = models.IntegerField(default=0)
+    m_pitReleaseAssist = models.IntegerField(default=0)
+    m_ERSAssist = models.IntegerField(default=0)
+    m_DRSAssist = models.IntegerField(default=0)
+    m_dynamicRacingLine = models.IntegerField(default=0)
+    m_dynamicRacingLineType = models.IntegerField(default=0)
+    m_gameMode = models.IntegerField(default=0)
+    m_ruleSet = models.IntegerField(default=0)
+    m_timeOfDay = models.PositiveIntegerField(default=0)
+    m_sessionLength = models.IntegerField(default=0)
     
 class Lap(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    lastLapTimeInMS = models.PositiveIntegerField()                     #0
-    currentLapTimeInMS = models.PositiveIntegerField()                  #1
-    sector1TimeInMS = models.PositiveIntegerField()                     #2
-    sector2TimeInMS = models.PositiveIntegerField()                     #3
-    lapDistance = models.FloatField()                                   #4
-    totalDistance = models.FloatField()                                 #5
-    safetyCarDelta = models.FloatField()                                #6
-    carPosition = models.PositiveSmallIntegerField()                    #7
-    currentLapNum = models.PositiveSmallIntegerField()                  #8
-    pitStatus = models.PositiveSmallIntegerField()                      #9
-    numPitStops = models.PositiveSmallIntegerField()                    #10
-    sector = models.PositiveSmallIntegerField()                         #11
-    currentLapInvalid = models.PositiveSmallIntegerField()              #12
-    penalties = models.PositiveSmallIntegerField()                      #13
-    warnings = models.PositiveSmallIntegerField()                       #14
-    numUnservedDriveThroughPens = models.PositiveSmallIntegerField()    #15
-    numUnservedStopGoPens = models.PositiveSmallIntegerField()          #16
-    gridPosition = models.PositiveSmallIntegerField()                   #17
-    driverStatus = models.PositiveSmallIntegerField()                   #18
-    resultStatus = models.PositiveSmallIntegerField()                   #19
-    pitLaneTimerActive = models.PositiveSmallIntegerField()             #20
-    pitLaneTimeInLaneInMS = models.PositiveIntegerField()               #21
-    pitStopTimerInMS = models.PositiveIntegerField()                    #22
-    pitStopShouldServePen = models.PositiveSmallIntegerField()          #23
+    lastLapTimeInMS = models.PositiveIntegerField(default=0)                     #0
+    currentLapTimeInMS = models.PositiveIntegerField(default=0)                  #1
+    sector1TimeInMS = models.PositiveIntegerField(default=0)                     #2
+    sector2TimeInMS = models.PositiveIntegerField(default=0)                     #3
+    lapDistance = models.FloatField(default=0.0)                                   #4
+    totalDistance = models.FloatField(default=0.0)                                 #5
+    safetyCarDelta = models.FloatField(default=0.0)                                #6
+    carPosition = models.PositiveSmallIntegerField(default=0)                    #7
+    currentLapNum = models.PositiveSmallIntegerField(default=0)                  #8
+    pitStatus = models.PositiveSmallIntegerField(default=0)                      #9
+    numPitStops = models.PositiveSmallIntegerField(default=0)                    #10
+    sector = models.PositiveSmallIntegerField(default=0)                         #11
+    currentLapInvalid = models.PositiveSmallIntegerField(default=0)              #12
+    penalties = models.PositiveSmallIntegerField(default=0)                      #13
+    warnings = models.PositiveSmallIntegerField(default=0)                       #14
+    numUnservedDriveThroughPens = models.PositiveSmallIntegerField(default=0)    #15
+    numUnservedStopGoPens = models.PositiveSmallIntegerField(default=0)          #16
+    gridPosition = models.PositiveSmallIntegerField(default=0)                   #17
+    driverStatus = models.PositiveSmallIntegerField(default=0)                   #18
+    resultStatus = models.PositiveSmallIntegerField(default=0)                   #19
+    pitLaneTimerActive = models.PositiveSmallIntegerField(default=0)             #20
+    pitLaneTimeInLaneInMS = models.PositiveIntegerField(default=0)               #21
+    pitStopTimerInMS = models.PositiveIntegerField(default=0)                    #22
+    pitStopShouldServePen = models.PositiveSmallIntegerField(default=0)          #23
 
 
 
 class CarSetup(models.Model):
     header = models.OneToOneField(Header, on_delete=models.CASCADE)
-    frontWing = models.PositiveSmallIntegerField()                  #0
-    rearWing = models.PositiveSmallIntegerField()                   #1
-    onThrottle = models.PositiveSmallIntegerField()                 #2
-    offThrottle = models.PositiveSmallIntegerField()                #3
-    frontCamber = models.FloatField()
-    rearCamber = models.FloatField()
-    frontToe = models.FloatField()
-    rearToe = models.FloatField()
-    frontSuspension = models.PositiveSmallIntegerField()
-    rearSuspension = models.PositiveSmallIntegerField()
-    frontAntiRollBar = models.PositiveSmallIntegerField()
-    rearAntiRollBar = models.PositiveSmallIntegerField()
-    frontSuspensionHeight = models.PositiveSmallIntegerField()
-    rearSuspensionHeight = models.PositiveSmallIntegerField()
-    brakePressure = models.PositiveSmallIntegerField()
-    brakeBias = models.PositiveSmallIntegerField()
-    rearLeftTyrePressure = models.FloatField()
-    rearRightTyrePressure = models.FloatField()
-    frontLeftTyrePressure = models.FloatField()
-    frontRightTyrePressure = models.FloatField()
-    ballast = models.PositiveSmallIntegerField()
-    fuelLoad = models.FloatField()
+    frontWing = models.PositiveSmallIntegerField(default=0)                  #0
+    rearWing = models.PositiveSmallIntegerField(default=0)                   #1
+    onThrottle = models.PositiveSmallIntegerField(default=0)                 #2
+    offThrottle = models.PositiveSmallIntegerField(default=0)                #3
+    frontCamber = models.FloatField(default=0.0)
+    rearCamber = models.FloatField(default=0.0)
+    frontToe = models.FloatField(default=0.0)
+    rearToe = models.FloatField(default=0.0)
+    frontSuspension = models.PositiveSmallIntegerField(default=0)
+    rearSuspension = models.PositiveSmallIntegerField(default=0)
+    frontAntiRollBar = models.PositiveSmallIntegerField(default=0)
+    rearAntiRollBar = models.PositiveSmallIntegerField(default=0)
+    frontSuspensionHeight = models.PositiveSmallIntegerField(default=0)
+    rearSuspensionHeight = models.PositiveSmallIntegerField(default=0)
+    brakePressure = models.PositiveSmallIntegerField(default=0)
+    brakeBias = models.PositiveSmallIntegerField(default=0)
+    rearLeftTyrePressure = models.FloatField(default=0.0)
+    rearRightTyrePressure = models.FloatField(default=0.0)
+    frontLeftTyrePressure = models.FloatField(default=0.0)
+    frontRightTyrePressure = models.FloatField(default=0.0)
+    ballast = models.PositiveSmallIntegerField(default=0)
+    fuelLoad = models.FloatField(default=0.0)
 
 class Participant(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    numActiveCars = models.PositiveSmallIntegerField()
+    numActiveCars = models.PositiveSmallIntegerField(default=0)
     aiControlled = models.BooleanField()
     driverId = models.PositiveSmallIntegerField(default=9999)
-    networkId = models.PositiveSmallIntegerField()
-    teamId = models.PositiveSmallIntegerField()
+    networkId = models.PositiveSmallIntegerField(default=0)
+    teamId = models.PositiveSmallIntegerField(default=0)
     myTeam = models.BooleanField()
-    raceNumber = models.PositiveSmallIntegerField()
-    nationality = models.PositiveSmallIntegerField()
+    raceNumber = models.PositiveSmallIntegerField(default=0)
+    nationality = models.PositiveSmallIntegerField(default=0)
     name = models.CharField(max_length=100)
     yourTelemetry = models.BooleanField()
 
 class CarTelemetry(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
     driverId = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    speed = models.PositiveSmallIntegerField()
-    throttle = models.FloatField()
-    steer = models.FloatField()
-    brake = models.FloatField()
-    clutch = models.PositiveSmallIntegerField()
-    gear = models.SmallIntegerField()
-    engineRPM = models.PositiveSmallIntegerField()
-    drs = models.PositiveSmallIntegerField()
-    revLightsPercent = models.PositiveSmallIntegerField()
-    revLightsBitValue = models.PositiveSmallIntegerField()
-    brakesTemperatureRR = models.PositiveSmallIntegerField()
-    brakesTemperatureRL = models.PositiveSmallIntegerField()
-    brakesTemperatureFL = models.PositiveSmallIntegerField()
-    brakesTemperatureFR = models.PositiveSmallIntegerField()
-    tyresSurfaceTemperatureRR = models.PositiveSmallIntegerField()
-    tyresSurfaceTemperatureRL = models.PositiveSmallIntegerField()
-    tyresSurfaceTemperatureFL = models.PositiveSmallIntegerField()
-    tyresSurfaceTemperatureFR = models.PositiveSmallIntegerField()
-    tyresInnerTemperatureRR = models.PositiveSmallIntegerField()
-    tyresInnerTemperatureRL = models.PositiveSmallIntegerField()
-    tyresInnerTemperatureFL = models.PositiveSmallIntegerField()
-    tyresInnerTemperatureFR = models.PositiveSmallIntegerField()
-    engineTemperature = models.PositiveSmallIntegerField()
-    tyresPressureRR = models.FloatField()
-    tyresPressureRL = models.FloatField()
-    tyresPressureFL = models.FloatField()
-    tyresPressureFR = models.FloatField()
-    surfaceTypeRR = models.PositiveSmallIntegerField()
-    surfaceTypeRL = models.PositiveSmallIntegerField()
-    surfaceTypeFL = models.PositiveSmallIntegerField()
-    surfaceTypeFR = models.PositiveSmallIntegerField()
+    speed = models.PositiveSmallIntegerField(default=0)
+    throttle = models.FloatField(default=0.0)
+    steer = models.FloatField(default=0.0)
+    brake = models.FloatField(default=0.0)
+    clutch = models.PositiveSmallIntegerField(default=0)
+    gear = models.SmallIntegerField(default=0)
+    engineRPM = models.PositiveSmallIntegerField(default=0)
+    drs = models.PositiveSmallIntegerField(default=0)
+    revLightsPercent = models.PositiveSmallIntegerField(default=0)
+    revLightsBitValue = models.PositiveSmallIntegerField(default=0)
+    brakesTemperatureRR = models.PositiveSmallIntegerField(default=0)
+    brakesTemperatureRL = models.PositiveSmallIntegerField(default=0)
+    brakesTemperatureFL = models.PositiveSmallIntegerField(default=0)
+    brakesTemperatureFR = models.PositiveSmallIntegerField(default=0)
+    tyresSurfaceTemperatureRR = models.PositiveSmallIntegerField(default=0)
+    tyresSurfaceTemperatureRL = models.PositiveSmallIntegerField(default=0)
+    tyresSurfaceTemperatureFL = models.PositiveSmallIntegerField(default=0)
+    tyresSurfaceTemperatureFR = models.PositiveSmallIntegerField(default=0)
+    tyresInnerTemperatureRR = models.PositiveSmallIntegerField(default=0)
+    tyresInnerTemperatureRL = models.PositiveSmallIntegerField(default=0)
+    tyresInnerTemperatureFL = models.PositiveSmallIntegerField(default=0)
+    tyresInnerTemperatureFR = models.PositiveSmallIntegerField(default=0)
+    engineTemperature = models.PositiveSmallIntegerField(default=0)
+    tyresPressureRR = models.FloatField(default=0.0)
+    tyresPressureRL = models.FloatField(default=0.0)
+    tyresPressureFL = models.FloatField(default=0.0)
+    tyresPressureFR = models.FloatField(default=0.0)
+    surfaceTypeRR = models.PositiveSmallIntegerField(default=0)
+    surfaceTypeRL = models.PositiveSmallIntegerField(default=0)
+    surfaceTypeFL = models.PositiveSmallIntegerField(default=0)
+    surfaceTypeFR = models.PositiveSmallIntegerField(default=0)
 
 
 

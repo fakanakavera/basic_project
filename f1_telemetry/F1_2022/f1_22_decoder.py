@@ -14,10 +14,9 @@ django.setup()
 
 from ..models import Header, CarMotion, Lap, CarSetup, Participant, CarTelemetry, Log, PacketSession
 
-results = Lap.objects.filter(currentLapNum=2,header__cartelemetry__isnull=False).select_related('header').prefetch_related('header__cartelemetry')
 class f1_22_decoder:
     def __init__(self):
-        self.UDP_IP = "127.0.0.1"  # UDP listen IP-address
+        self.UDP_IP = "192.168.3.13"  # UDP listen IP-address
         self.UDP_PORT = 20777  # UDP listen port
         self.PACKET_SIZE = 1464    # Amount of bytes in packet
 
