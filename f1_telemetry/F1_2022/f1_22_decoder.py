@@ -35,6 +35,15 @@ class f1_22_decoder:
         self.player_car_index = -1
         self.decoder_loop_running = True
 
+        self.packet_decoder_map = {
+            0: self.decode_packet_0,
+            1: self.decode_packet_1,
+            2: self.decode_packet_2,
+            4: self.decode_packet_4,
+            5: self.decode_packet_5,
+            6: self.decode_packet_6,
+        }
+
         # Create UDP Socket
         self.udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Bind socket to IP and port
@@ -42,17 +51,36 @@ class f1_22_decoder:
         print("F1 Telemetry ready")  # Show we're ready
         print("Listening on " + self.UDP_IP + ":" +
               str(self.UDP_PORT))  # Show IP and port
+        
+    def format_dict_for_log(self, d):
+        """Formats a dictionary into a string for logging purposes."""
+        return ', '.join(f'{key}: {value}' for key, value in d.items())
+
+    def log_error(self, e, event_type, data):
+        """Logs an error message."""
+        Log.objects.create(event_type=event_type, message=f"{e}\n{self.format_dict_for_log(data)}")
+        
+    def decode_packet(self, data, data_format):
+        for x in range(0, len(data_format)):
+            self.size = data_types[data_format[x][2]]['size']
+            data_format[x][1] = unpack(
+                '<' + data_types[data_format[x][2]]['format'], data[self.index:self.index+self.size])[0]
+            
+            self.index += self.size
+        
+        return data_format
 
     def decode_header(self, data):
         #os.system('cls')
-        for x in range(0, len(header_data)):  # Do for every item in the received array
-            # Set size based on if it's a byte or float
-            self.size = data_types[header_data[x][2]]['size']
-            header_data[x][1] = unpack(
-                '<' + data_types[header_data[x][2]]['format'], data[self.index:self.index+self.size])[0]
+        # for x in range(0, len(header_data)):  # Do for every item in the received array
+        #     # Set size based on if it's a byte or float
+        #     self.size = data_types[header_data[x][2]]['size']
+        #     header_data[x][1] = unpack(
+        #         '<' + data_types[header_data[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
-            #print(header_data[x][0], ': ', header_data[x][1])
-            self.index += self.size
+        #     #print(header_data[x][0], ': ', header_data[x][1])
+        #     self.index += self.size
+        header_data = self.decode_packet(data, header_data)
 
         if self.save_all or self.save_header:
             try:
@@ -60,37 +88,55 @@ class f1_22_decoder:
 
                 # self.header_instance, created = Header.objects.get_or_create(
                 #     sessionUID=header_data[5][1], sessionTime=header_data[6][1])
-                self.header_instance, created = Header.objects.get_or_create(
-                    packetFormat=header_data[0][1],
-                    gameMajorVersion=header_data[1][1],
-                    gameMinorVersion=header_data[2][1],
-                    packetVersion=header_data[3][1],
-                    packetId=header_data[4][1],
-                    sessionUID=header_data[5][1],
-                    sessionTime=header_data[6][1],
-                    frameIdentifier=header_data[7][1],
-                    playerCarIndex=header_data[8][1],
-                    secondaryPlayerCarIndex=header_data[9][1]
-                )
+                header_model_dict = {
+                    'packetFormat': header_data[0][1],
+                    'gameMajorVersion': header_data[1][1],
+                    'gameMinorVersion': header_data[2][1],
+                    'packetVersion': header_data[3][1],
+                    'packetId': header_data[4][1],
+                    'sessionUID': header_data[5][1],
+                    'sessionTime': header_data[6][1],
+                    'frameIdentifier': header_data[7][1],
+                    'playerCarIndex': header_data[8][1],
+                    'secondaryPlayerCarIndex': header_data[9][1]
+                }
+                self.header_instance, created = Header.objects.get_or_create(**header_model_dict)
+                # self.header_instance, created = Header.objects.get_or_create(
+                #     packetFormat=header_data[0][1],
+                #     gameMajorVersion=header_data[1][1],
+                #     gameMinorVersion=header_data[2][1],
+                #     packetVersion=header_data[3][1],
+                #     packetId=header_data[4][1],
+                #     sessionUID=header_data[5][1],
+                #     sessionTime=header_data[6][1],
+                #     frameIdentifier=header_data[7][1],
+                #     playerCarIndex=header_data[8][1],
+                #     secondaryPlayerCarIndex=header_data[9][1]
+                # )
 
                 self.header_instance.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{header_data}")
-                print(header_data[6][1])
-                #time.sleep(1)
+                self.log_error(e, "Header", header_model_dict)
 
-        if header_data[4][1] == 0:
-            self.decode_packet_0(data)
-        if header_data[4][1] == 1:
-            self.decode_packet_1(data)
-        if header_data[4][1] == 2:
-            self.decode_packet_2(data)
-        if header_data[4][1] == 4:
-            self.decode_packet_4(data)
-        if header_data[4][1] == 5:
-            self.decode_packet_5(data)
-        if header_data[4][1] == 6:
-            self.decode_packet_6(data)
+        packet_id = header_data[4][1]
+        decode_method = self.packet_decoder_map.get(packet_id)
+        if decode_method:
+            decode_method(data)
+        else:
+            self.log_error(event_type="Packet_id", message=f"Unknown packet ID: {packet_id}", data=header_data)
+
+        # if header_data[4][1] == 0:
+        #     self.decode_packet_0(data)
+        # if header_data[4][1] == 1:
+        #     self.decode_packet_1(data)
+        # if header_data[4][1] == 2:
+        #     self.decode_packet_2(data)
+        # if header_data[4][1] == 4:
+        #     self.decode_packet_4(data)
+        # if header_data[4][1] == 5:
+        #     self.decode_packet_5(data)
+        # if header_data[4][1] == 6:
+        #     self.decode_packet_6(data)
 
     def decode_packet_0(self, data):
         # os.system('cls')
