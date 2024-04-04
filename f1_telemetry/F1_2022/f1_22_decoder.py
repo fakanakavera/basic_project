@@ -71,6 +71,7 @@ class f1_22_decoder:
         return data_format
 
     def decode_header(self, data):
+        global header_data
         #os.system('cls')
         # for x in range(0, len(header_data)):  # Do for every item in the received array
         #     # Set size based on if it's a byte or float
