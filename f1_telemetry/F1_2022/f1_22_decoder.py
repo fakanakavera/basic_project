@@ -43,6 +43,14 @@ class f1_22_decoder:
             4: self.decode_packet_4,
             5: self.decode_packet_5,
             6: self.decode_packet_6,
+            7: self.decode_packet_3,
+            8: self.decode_packet_3,
+            9: self.decode_packet_3,
+            10: self.decode_packet_3,
+            11: self.decode_packet_3,
+            12: self.decode_packet_3,
+            13: self.decode_packet_3,
+            14: self.decode_packet_3,
         }
 
         # Create UDP Socket
@@ -52,6 +60,12 @@ class f1_22_decoder:
         print("F1 Telemetry ready")  # Show we're ready
         print("Listening on " + self.UDP_IP + ":" +
               str(self.UDP_PORT))  # Show IP and port
+        
+    def make_model_dict(self, data):
+        d = {}
+        for key, value, type in data:
+            d[key[2:]] = value
+        return d
         
     def format_dict_for_log(self, d):
         """Formats a dictionary into a string for logging purposes."""
@@ -76,48 +90,12 @@ class f1_22_decoder:
 
     def decode_header(self, data):
         global header_data
-        #os.system('cls')
-        # for x in range(0, len(header_data)):  # Do for every item in the received array
-        #     # Set size based on if it's a byte or float
-        #     self.size = data_types[header_data[x][2]]['size']
-        #     header_data[x][1] = unpack(
-        #         '<' + data_types[header_data[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-        #     #print(header_data[x][0], ': ', header_data[x][1])
-        #     self.index += self.size
         header_data = self.decode_packet(data, header_data)
 
         if self.save_all or self.save_header:
             try:
-                # add a header to the database if it doesn't exist, we need to check both sessionUID and sessionTime
-
-                # self.header_instance, created = Header.objects.get_or_create(
-                #     sessionUID=header_data[5][1], sessionTime=header_data[6][1])
-                header_model_dict = {
-                    'packetFormat': header_data[0][1],
-                    'gameMajorVersion': header_data[1][1],
-                    'gameMinorVersion': header_data[2][1],
-                    'packetVersion': header_data[3][1],
-                    'packetId': header_data[4][1],
-                    'sessionUID': header_data[5][1],
-                    'sessionTime': header_data[6][1],
-                    'frameIdentifier': header_data[7][1],
-                    'playerCarIndex': header_data[8][1],
-                    'secondaryPlayerCarIndex': header_data[9][1]
-                }
-                self.header_instance, created = Header.objects.get_or_create(**header_model_dict)
-                # self.header_instance, created = Header.objects.get_or_create(
-                #     packetFormat=header_data[0][1],
-                #     gameMajorVersion=header_data[1][1],
-                #     gameMinorVersion=header_data[2][1],
-                #     packetVersion=header_data[3][1],
-                #     packetId=header_data[4][1],
-                #     sessionUID=header_data[5][1],
-                #     sessionTime=header_data[6][1],
-                #     frameIdentifier=header_data[7][1],
-                #     playerCarIndex=header_data[8][1],
-                #     secondaryPlayerCarIndex=header_data[9][1]
-                # )
+                header_model_dict = self.make_model_dict(header_data)
+                self.header_instance, _ = Header.objects.get_or_create(**header_model_dict)
 
                 self.header_instance.save()
             except Exception as e:
@@ -131,143 +109,49 @@ class f1_22_decoder:
             pass
             # self.log_error(event_type="PacketID", message="PacketID doesnt exists on packet_decoder_map.\n", data=header_data)
 
-        # if header_data[4][1] == 0:
-        #     self.decode_packet_0(data)
-        # if header_data[4][1] == 1:
-        #     self.decode_packet_1(data)
-        # if header_data[4][1] == 2:
-        #     self.decode_packet_2(data)
-        # if header_data[4][1] == 4:
-        #     self.decode_packet_4(data)
-        # if header_data[4][1] == 5:
-        #     self.decode_packet_5(data)
-        # if header_data[4][1] == 6:
-        #     self.decode_packet_6(data)
-
     def decode_packet_0(self, data):
-        # os.system('cls')
-        for x in range(0, len(CarMotionData)):
-            self.size = data_types[CarMotionData[x][2]]['size']
-            CarMotionData[x][1] = unpack(
-                '<' + data_types[CarMotionData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-            # print(CarMotionData[x][0], ': ', CarMotionData[x][1])
-            self.index += self.size
+        global CarMotionData
+        CarMotionData = self.decode_packet(data, CarMotionData)
             
         if self.save_all or self.save_carmotion:
             try:
-                carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance,
-                    gForceLateral=CarMotionData[12][1], 
-                    gForceLongitudinal=CarMotionData[13][1], 
-                    gForceVertical=CarMotionData[14][1], 
-                    yaw=CarMotionData[15][1], 
-                    pitch=CarMotionData[16][1], 
-                    roll=CarMotionData[17][1])
+                carmotion_model_dict = self.make_model_dict(CarMotionData)
+                carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance, **carmotion_model_dict)
                 carmotion.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{CarMotionData}")
+                self.log_error(message=e, event_type="CarMotion", data=carmotion_model_dict)
 
 
     def decode_packet_1(self, data):
-        #os.system('cls')
-        for x in range(0, len(PacketSessionData)):
-            self.size = data_types[PacketSessionData[x][2]]['size']
-            PacketSessionData[x][1] = unpack(
-                '<' + data_types[PacketSessionData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-            self.index += self.size
+        global PacketSessionData
+        PacketSessionData = self.decode_packet(data, PacketSessionData)
 
         if self.save_all:
             try:
-                packet_session, _ = PacketSession.objects.get_or_create(header=self.header_instance,
-                    weather=PacketSession[0][1], 
-                    trackTemperature=PacketSession[1][1], 
-                    airTemperature=PacketSession[2][1], 
-                    totalLaps=PacketSession[3][1], 
-                    trackLength=PacketSession[4][1], 
-                    sessionType=PacketSession[5][1], 
-                    trackId=PacketSession[6][1], 
-                    formula=PacketSession[7][1], 
-                    sessionTimeLeft=PacketSession[8][1], 
-                    sessionDuration=PacketSession[9][1], 
-                    pitSpeedLimit=PacketSession[10][1], 
-                    gamePaused=PacketSession[11][1], 
-                    isSpectating=PacketSession[12][1], 
-                    spectatorCarIndex=PacketSession[13][1], 
-                    sliProNativeSupport=PacketSession[14][1],
-                    numMarshalZones=PacketSession[15][1],
-                    zoneStart=PacketSession[16][1],
-                    zoneFlag=PacketSession[17][1],
-                    safetyCarStatus=PacketSession[18][1],
-                    networkGame=PacketSession[19][1],
-                    numWeatherForecastSamples=PacketSession[20][1],
-                    timeOffset=PacketSession[21][1],
-                    trackTemperatureChange=PacketSession[22][1],
-                    airTemperatureChange=PacketSession[23][1],
-                    rainPercentage=PacketSession[24][1],
-                    forecastAccuracy=PacketSession[25][1],
-                    aiDifficulty=PacketSession[26][1],
-                    seasonLinkIdentifier=PacketSession[27][1],
-                    weekendLinkIdentifier=PacketSession[28][1],
-                    sessionLinkIdentifier=PacketSession[29][1],
-                    pitStopWindowIdealLap=PacketSession[30][1],
-                    pitStopWindowLatestLap=PacketSession[31][1],
-                    pitStopRejoinPosition=PacketSession[32][1],
-                    steeringAssist=PacketSession[33][1],
-                    brakingAssist=PacketSession[34][1],
-                    gearboxAssist=PacketSession[35][1],
-                    pitAssist=PacketSession[36][1],
-                    pitReleaseAssist=PacketSession[37][1],
-                    ERSAssist=PacketSession[38][1],
-                    DRSAssist=PacketSession[39][1],
-                    dynamicRacingLine=PacketSession[40][1],
-                    dynamicRacingLineType=PacketSession[41][1],
-                    gameMode=PacketSession[42][1],
-                    ruleSet=PacketSession[43][1],
-                    timeOfDay=PacketSession[44][1],
-                    sessionLength=PacketSession[45][1])
+                packet_session_model_dict = self.make_model_dict(PacketSessionData)
+                packet_session, _ = PacketSession.objects.get_or_create(header=self.header_instance, **packet_session_model_dict)
                 packet_session.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{PacketSessionData}")
+                self.log_error(message=e, event_type="PacketSession", data=packet_session_model_dict)
 
     def decode_packet_2(self, data):
-        # os.system('cls')
-        for x in range(0, len(LapData)):
-            self.size = data_types[LapData[x][2]]['size']
-            LapData[x][1] = unpack(
-                '<' + data_types[LapData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-            # print(LapData[x][0], ': ', LapData[x][1])
-            self.index += self.size
+        global LapData
+        LapData = self.decode_packet(data, LapData)
         
         if self.save_all or self.save_lap:
             try:
-                os.system('cls')
-                lap, _ = Lap.objects.get_or_create(header=self.header_instance,
-                    lastLapTimeInMS=LapData[0][1], 
-                    currentLapTimeInMS=LapData[1][1], 
-                    sector1TimeInMS=LapData[2][1], 
-                    sector2TimeInMS=LapData[3][1], 
-                    lapDistance=LapData[4][1], 
-                    totalDistance=LapData[5][1],
-                    currentLapNum=LapData[8][1])
+                lap_model_dict = self.make_model_dict(LapData)
+                lap, _ = Lap.objects.get_or_create(header=self.header_instance, **lap_model_dict)
                 lap.save()
-                for x in range(0, len(LapData)):
-                    print(LapData[x][0], ': ', LapData[x][1])
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{LapData}")
-                print(f" {e}\n{LapData}")
+                self.log_error(message=e, event_type="Lap", data=lap_model_dict)
 
     def decode_packet_3(self, data):
         pass
 
     def decode_packet_4(self, data):
-        # os.system('cls')
-        self.size = data_types[ParticipantsData[0][2]]['size']
-        ParticipantsData[0][1] = unpack(
-            '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
-        self.total_participants = ParticipantsData[0][1]
-        self.index += self.size
+        global ParticipantsData
+        ParticipantsData = self.decode_packet(data, ParticipantsData)
 
         for p in range(0, ParticipantsData[0][1]):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
@@ -288,52 +172,23 @@ class f1_22_decoder:
             
             if self.save_all and self.player_car_index == p:
                 try:
-                    self.participant, _ = Participant.objects.get_or_create(
-                        aiControlled=ParticipantsData[1][1], 
-                        driverId=ParticipantsData[2][1], 
-                        teamId=ParticipantsData[4][1])
-                    self.participant.save()
+                    participant_model_dict = self.make_model_dict(ParticipantsData)
+                    participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
+                    participant.save()
                 except Exception as e:
-                    Log.objects.create(event_type="Error", message=f" {e}\n{ParticipantsData}")
+                    self.log_error(message=e, event_type="Participant", data=participant_model_dict)
 
     def decode_packet_5(self, data):
-        # os.system('cls')
-        for x in range(0, len(CarSetupData)):
-            self.size = data_types[CarSetupData[x][2]]['size']
-            CarSetupData[x][1] = unpack(
-                '<' + data_types[CarSetupData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-            # print(CarSetupData[x][0], ': ', CarSetupData[x][1])
-            self.index += self.size
+        global CarSetupData
+        CarSetupData = self.decode_packet(data, CarSetupData)
         
         if self.save_all or self.save_carsetup:
             try:
-                carsetup, _ = CarSetup.objects.get_or_create(header=self.header_instance,
-                    frontWing=CarSetupData[0][1], 
-                    rearWing=CarSetupData[1][1], 
-                    onThrottle=CarSetupData[2][1], 
-                    offThrottle=CarSetupData[3][1], 
-                    frontCamber=CarSetupData[4][1], 
-                    rearCamber=CarSetupData[5][1], 
-                    frontToe=CarSetupData[6][1], 
-                    rearToe=CarSetupData[7][1], 
-                    frontSuspension=CarSetupData[8][1], 
-                    rearSuspension=CarSetupData[9][1], 
-                    frontAntiRollBar=CarSetupData[10][1], 
-                    rearAntiRollBar=CarSetupData[11][1], 
-                    frontSuspensionHeight=CarSetupData[12][1], 
-                    rearSuspensionHeight=CarSetupData[13][1], 
-                    brakePressure=CarSetupData[14][1], 
-                    brakeBias=CarSetupData[15][1], 
-                    rearLeftTyrePressure=CarSetupData[16][1], 
-                    rearRightTyrePressure=CarSetupData[17][1], 
-                    frontLeftTyrePressure=CarSetupData[18][1], 
-                    frontRightTyrePressure=CarSetupData[19][1], 
-                    ballast=CarSetupData[20][1], 
-                    fuelLoad=CarSetupData[21][1])
+                carsetup_model_dict = self.make_model_dict(CarSetupData)
+                carsetup, _ = CarSetup.objects.get_or_create(header=self.header_instance, **carsetup_model_dict)
                 carsetup.save()
             except Exception as e:
-                Log.objects.create(event_type="Error", message=f" {e}\n{CarSetupData}")
+                self.log_error(message=e, event_type="CarSetup", data=carsetup_model_dict)
 
     def decode_packet_6(self, data):
         # os.system('cls')
@@ -350,45 +205,11 @@ class f1_22_decoder:
 
             if self.save_all and self.player_car_index == p:
                 try:
-                    car_telemetry, _ = CarTelemetry.objects.get_or_create(
-                        header=self.header_instance,
-                        driverId=self.participant,
-                        speed=CarTelemetryData[0][1],
-                        throttle=CarTelemetryData[1][1],
-                        steer=CarTelemetryData[2][1],
-                        brake=CarTelemetryData[3][1],
-                        clutch=CarTelemetryData[4][1],
-                        gear=CarTelemetryData[5][1],
-                        engineRPM=CarTelemetryData[6][1],
-                        drs=CarTelemetryData[7][1],
-                        revLightsPercent=CarTelemetryData[8][1],
-                        revLightsBitValue=CarTelemetryData[9][1],
-                        brakesTemperatureRR=CarTelemetryData[10][1],
-                        brakesTemperatureRL=CarTelemetryData[11][1],
-                        brakesTemperatureFL=CarTelemetryData[12][1],
-                        brakesTemperatureFR=CarTelemetryData[13][1],
-                        tyresSurfaceTemperatureRR=CarTelemetryData[14][1],
-                        tyresSurfaceTemperatureRL=CarTelemetryData[15][1],
-                        tyresSurfaceTemperatureFL=CarTelemetryData[16][1],
-                        tyresSurfaceTemperatureFR=CarTelemetryData[17][1],
-                        tyresInnerTemperatureRR=CarTelemetryData[18][1],
-                        tyresInnerTemperatureRL=CarTelemetryData[19][1],
-                        tyresInnerTemperatureFL=CarTelemetryData[20][1],
-                        tyresInnerTemperatureFR=CarTelemetryData[21][1],
-                        engineTemperature=CarTelemetryData[22][1],
-                        tyresPressureRR=CarTelemetryData[23][1],
-                        tyresPressureRL=CarTelemetryData[24][1],
-                        tyresPressureFL=CarTelemetryData[25][1],
-                        tyresPressureFR=CarTelemetryData[26][1],
-                        surfaceTypeRR=CarTelemetryData[27][1],
-                        surfaceTypeRL=CarTelemetryData[28][1],
-                        surfaceTypeFL=CarTelemetryData[29][1],
-                        surfaceTypeFR=CarTelemetryData[30][1]
-                    )
-
+                    car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
+                    car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
-                    Log.objects.create(event_type="Error", message=f" {e}\n{CarTelemetryData}")
+                    self.log_error(message=e, event_type="CarTelemetry", data=car_telemetry_model_dict)
             
 
     def decoder_loop(self):
