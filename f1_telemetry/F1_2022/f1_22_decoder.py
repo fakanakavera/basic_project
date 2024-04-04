@@ -39,6 +39,7 @@ class f1_22_decoder:
             0: self.decode_packet_0,
             1: self.decode_packet_1,
             2: self.decode_packet_2,
+            3: self.decode_packet_3,
             4: self.decode_packet_4,
             5: self.decode_packet_5,
             6: self.decode_packet_6,
@@ -255,6 +256,9 @@ class f1_22_decoder:
             except Exception as e:
                 Log.objects.create(event_type="Error", message=f" {e}\n{LapData}")
                 print(f" {e}\n{LapData}")
+
+    def decode_packet_3(self, data):
+        pass
 
     def decode_packet_4(self, data):
         # os.system('cls')
