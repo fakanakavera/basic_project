@@ -54,6 +54,7 @@ class f1_22_decoder:
         
     def format_dict_for_log(self, d):
         """Formats a dictionary into a string for logging purposes."""
+        print(d)
         return ', '.join(f'{key}: {value} --> {type}' for key, value, type in d)
 
     def log_error(self, message, event_type, data=""):
