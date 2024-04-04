@@ -16,7 +16,7 @@ from ..models import Header, CarMotion, Lap, CarSetup, Participant, CarTelemetry
 
 class f1_22_decoder:
     def __init__(self):
-        self.UDP_IP = "192.168.3.13"  # UDP listen IP-address
+        self.UDP_IP = "192.168.3.14"  # UDP listen IP-address
         self.UDP_PORT = 20777  # UDP listen port
         self.PACKET_SIZE = 1464    # Amount of bytes in packet
 
