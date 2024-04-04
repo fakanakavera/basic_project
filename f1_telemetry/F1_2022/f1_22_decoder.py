@@ -128,7 +128,8 @@ class f1_22_decoder:
         if decode_method:
             decode_method(data)
         else:
-            self.log_error(event_type="PacketID", message="PacketID doesnt exists on packet_decoder_map.\n", data=header_data)
+            pass
+            # self.log_error(event_type="PacketID", message="PacketID doesnt exists on packet_decoder_map.\n", data=header_data)
 
         # if header_data[4][1] == 0:
         #     self.decode_packet_0(data)
