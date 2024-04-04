@@ -56,9 +56,11 @@ class f1_22_decoder:
         """Formats a dictionary into a string for logging purposes."""
         return ', '.join(f'{key}: {value}' for key, value in d.items())
 
-    def log_error(self, e, event_type, data):
+    def log_error(self, message, event_type, data=""):
         """Logs an error message."""
-        Log.objects.create(event_type=event_type, message=f"{e}\n{self.format_dict_for_log(data)}")
+        if data:
+            data = self.format_dict_for_log(data)
+        Log.objects.create(event_type=event_type, message=f"{message}\n{self.format_dict_for_log(data)}")
         
     def decode_packet(self, data, data_format):
         for x in range(0, len(data_format)):
@@ -117,14 +119,14 @@ class f1_22_decoder:
 
                 self.header_instance.save()
             except Exception as e:
-                self.log_error(e, "Header", header_model_dict)
+                self.log_error(message=e, event_type="Header", data=header_model_dict)
 
         packet_id = header_data[4][1]
         decode_method = self.packet_decoder_map.get(packet_id)
         if decode_method:
             decode_method(data)
         else:
-            self.log_error(event_type="Unknown packet ID", data=header_data)
+            self.log_error(event_type="PacketID", message="PacketID doesnt exists on packet_decoder_map.\n", data=header_data)
 
         # if header_data[4][1] == 0:
         #     self.decode_packet_0(data)
