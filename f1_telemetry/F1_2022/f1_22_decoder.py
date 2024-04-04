@@ -124,7 +124,7 @@ class f1_22_decoder:
         if decode_method:
             decode_method(data)
         else:
-            self.log_error(event_type="Packet_id", message=f"Unknown packet ID: {packet_id}", data=header_data)
+            self.log_error(event_type="Unknown packet ID", data=header_data)
 
         # if header_data[4][1] == 0:
         #     self.decode_packet_0(data)
