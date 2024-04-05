@@ -61,10 +61,8 @@ class f1_22_decoder:
         print("Listening on " + self.UDP_IP + ":" +
               str(self.UDP_PORT))  # Show IP and port
         
-    def make_model_dict(self, data, header=False):
+    def make_model_dict(self, data):
         d = {}
-        if header:
-            d['header'] = self.header_instance
         for key, value, type in data:
             d[key[2:]] = value
         return d
@@ -117,7 +115,7 @@ class f1_22_decoder:
             
         if self.save_all or self.save_carmotion:
             try:
-                carmotion_model_dict = self.make_model_dict(CarMotionData, header=True)
+                carmotion_model_dict = self.make_model_dict(CarMotionData)
                 carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance, **carmotion_model_dict)
                 carmotion.save()
             except Exception as e:
@@ -130,7 +128,7 @@ class f1_22_decoder:
 
         if self.save_all:
             try:
-                packet_session_model_dict = self.make_model_dict(PacketSessionData, header=True)
+                packet_session_model_dict = self.make_model_dict(PacketSessionData)
                 packet_session, _ = PacketSession.objects.get_or_create(header=self.header_instance, **packet_session_model_dict)
                 packet_session.save()
             except Exception as e:
@@ -142,7 +140,7 @@ class f1_22_decoder:
         
         if self.save_all or self.save_lap:
             try:
-                lap_model_dict = self.make_model_dict(LapData, header=True)
+                lap_model_dict = self.make_model_dict(LapData)
                 lap, _ = Lap.objects.get_or_create(header=self.header_instance, **lap_model_dict)
                 lap.save()
             except Exception as e:
@@ -174,7 +172,7 @@ class f1_22_decoder:
             
             if self.save_all and self.player_car_index == p:
                 try:
-                    participant_model_dict = self.make_model_dict(ParticipantsData, header=True)
+                    participant_model_dict = self.make_model_dict(ParticipantsData)
                     participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
                     participant.save()
                 except Exception as e:
@@ -186,7 +184,7 @@ class f1_22_decoder:
         
         if self.save_all or self.save_carsetup:
             try:
-                carsetup_model_dict = self.make_model_dict(CarSetupData, header=True)
+                carsetup_model_dict = self.make_model_dict(CarSetupData)
                 carsetup, _ = CarSetup.objects.get_or_create(header=self.header_instance, **carsetup_model_dict)
                 carsetup.save()
             except Exception as e:
@@ -207,7 +205,7 @@ class f1_22_decoder:
 
             if self.save_all and self.player_car_index == p:
                 try:
-                    car_telemetry_model_dict = self.make_model_dict(CarTelemetryData, header=True)
+                    car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
                     car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
