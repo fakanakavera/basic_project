@@ -90,7 +90,7 @@ class PacketSession(models.Model):
     dynamicRacingLineType = models.IntegerField(default=0)
     gameMode = models.IntegerField(default=0)
     ruleSet = models.IntegerField(default=0)
-    timeOfDay = models.PositiveIntegerField(default=0)
+    timeOfDay = models.PositiveBigIntegerField(default=0)
     sessionLength = models.IntegerField(default=0)
     
 class Lap(models.Model):
