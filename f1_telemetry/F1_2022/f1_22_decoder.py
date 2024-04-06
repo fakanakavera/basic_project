@@ -210,6 +210,9 @@ class f1_22_decoder:
                     car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
+                    print(e)
+                    print(CarTelemetryData)
+                    print('-------------------------------')
                     self.log_error(message=e, event_type="CarTelemetry", data=car_telemetry_model_dict)
             
 
