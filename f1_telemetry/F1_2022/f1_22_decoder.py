@@ -152,7 +152,14 @@ class f1_22_decoder:
 
     def decode_packet_4(self, data):
         global ParticipantsData
-        ParticipantsData = self.decode_packet(data, ParticipantsData[0:1])
+        # ParticipantsData = self.decode_packet(data, ParticipantsData[0:1])
+
+        self.size = data_types[ParticipantsData[0][2]]['size']
+        ParticipantsData[0][1] = unpack(
+            '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
+        
+        self.index += self.size
+    
         self.total_participants = ParticipantsData[0][1]
         self.driver_id = []
         for i in range(self.total_participants):
