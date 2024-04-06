@@ -152,20 +152,19 @@ class f1_22_decoder:
 
     def decode_packet_4(self, data):
         global ParticipantsData
-        ParticipantsData[0] = self.decode_packet(data, ParticipantsData[0])
+        # ParticipantsData[0] = self.decode_packet(data, ParticipantsData[0])
 
-        # self.size = data_types[ParticipantsData[0][2]]['size']
-        # ParticipantsData[0][1] = unpack(
-        #     '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
+        self.size = data_types[ParticipantsData[0][2]]['size']
+        ParticipantsData[0][1] = unpack(
+            '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
         
-        # self.index += self.size
+        self.index += self.size
     
         self.total_participants = ParticipantsData[0][1]
         self.driver_id = []
         for i in range(self.total_participants):
             self.driver_id.append(0)
         for p in range(0, self.total_participants):
-            print('-----------------------------------------\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
             
                 self.size = data_types[ParticipantsData[x][2]]['size']
@@ -178,7 +177,6 @@ class f1_22_decoder:
                 if ParticipantsData[x][0] == 'm_name':
                     ParticipantsData[x][1] = ParticipantsData[x][1].decode(
                         'utf-8').rstrip('\x00')
-                print(ParticipantsData[x][0], ParticipantsData[x][1])
                 self.index += self.size
             
             if self.save_all:
