@@ -154,7 +154,7 @@ class f1_22_decoder:
         global ParticipantsData
         ParticipantsData = self.decode_packet(data, ParticipantsData)
         self.total_participants = ParticipantsData[0][1]
-        for p in range(0, ParticipantsData[0][1]):
+        for p in range(0, self.total_participants-1):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
                 self.size = data_types[ParticipantsData[x][2]]['size']
