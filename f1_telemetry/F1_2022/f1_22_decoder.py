@@ -193,6 +193,7 @@ class f1_22_decoder:
 
     def decode_packet_6(self, data):
         # os.system('cls')
+        print(f"total part: {self.total_participants}")
         for p in range(0, self.total_participants):
             for x in range(0, len(CarTelemetryData)):
                 self.size = data_types[CarTelemetryData[x][2]]['size']
