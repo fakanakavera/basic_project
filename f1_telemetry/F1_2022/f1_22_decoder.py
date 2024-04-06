@@ -156,12 +156,13 @@ class f1_22_decoder:
         self.total_participants = ParticipantsData[0][1]
         for p in range(0, ParticipantsData[0][1]):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
-            for x in range(0, len(ParticipantsData)):
+            for x in range(1, len(ParticipantsData)):
                 self.size = data_types[ParticipantsData[x][2]]['size']
                 ParticipantsData[x][1] = unpack(
                     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
 
+                print(ParticipantsData[x][0], ': ', ParticipantsData[x][1])
                 if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
                     self.player_car_index = p
 
@@ -169,7 +170,6 @@ class f1_22_decoder:
                     ParticipantsData[x][1] = ParticipantsData[x][1].decode(
                         'utf-8').rstrip('\x00')
 
-                print(ParticipantsData[x][0], ': ', ParticipantsData[x][1])
                 self.index += self.size
             
             if self.save_all and self.player_car_index == p:
