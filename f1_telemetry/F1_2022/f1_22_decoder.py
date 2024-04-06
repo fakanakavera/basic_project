@@ -181,7 +181,6 @@ class f1_22_decoder:
                     participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
                     participant.save()
                     self.driver_id[p] = participant
-                    print(self.driver_id[p])
                 except Exception as e:
                     self.log_error(message=e, event_type="Participant", data=participant_model_dict)
 
@@ -199,22 +198,21 @@ class f1_22_decoder:
 
     def decode_packet_6(self, data):
         # os.system('cls')
-        print(f"total part: {self.total_participants}")
         for p in range(0, self.total_participants-1):
+            print('-------------------------------')
             for x in range(0, len(CarTelemetryData)):
                 self.size = data_types[CarTelemetryData[x][2]]['size']
                 CarTelemetryData[x][1] = unpack(
                     '<' + data_types[CarTelemetryData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
-                #if p == self.player_car_index:
-                    #print(CarTelemetryData[x][0], ': ', CarTelemetryData[x][1])
+                print(CarTelemetryData[x][0], ': ', CarTelemetryData[x][1])
 
                 self.index += self.size
 
             if self.save_all and self.player_car_index == p:
                 try:
                     car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
-                    print(car_telemetry_model_dict)
+                    print(CarTelemetryData)
                     car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, driverId=self.driver_id[p], **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
