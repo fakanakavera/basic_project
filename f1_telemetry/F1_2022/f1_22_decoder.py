@@ -161,6 +161,7 @@ class f1_22_decoder:
                 ParticipantsData[x][1] = unpack(
                     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
+                print(ParticipantsData[x][0], ': ', ParticipantsData[x][1])
                 if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
                     self.player_car_index = p
 
