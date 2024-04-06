@@ -179,8 +179,8 @@ class f1_22_decoder:
                 try:
                     participant_model_dict = self.make_model_dict(ParticipantsData)
                     participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
-                    participant.save()
                     self.driver_id[p] = participant
+                    participant.save()
                 except Exception as e:
                     self.log_error(message=e, event_type="Participant", data=participant_model_dict)
 
