@@ -215,6 +215,8 @@ class f1_22_decoder:
                     car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, driverId=self.driver_id[p], **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
+                    print(f"P: {p}")
+                    print(self.driver_id)
                     print(e)
                     print(CarTelemetryData)
                     print('-------------------------------')
