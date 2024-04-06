@@ -157,15 +157,14 @@ class f1_22_decoder:
         self.driver_id = []
         for i in range(self.total_participants):
             self.driver_id.append(0)
-        for p in range(0, self.total_participants):# with -1 the data is ok but we have 19 drivers.
+        for p in range(0, self.total_participants-1):# with -1 the data is ok but we have 19 drivers.
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
+                print(f"x: {x}")
                 self.size = data_types[ParticipantsData[x][2]]['size']
                 ParticipantsData[x][1] = unpack(
                     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
-
-                print(ParticipantsData[x][0], ': ', ParticipantsData[x][1])
                 if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
                     self.player_car_index = p
 
@@ -199,13 +198,10 @@ class f1_22_decoder:
     def decode_packet_6(self, data):
         # os.system('cls')
         for p in range(0, self.total_participants):
-            print('-------------------------------')
             for x in range(0, len(CarTelemetryData)):
                 self.size = data_types[CarTelemetryData[x][2]]['size']
                 CarTelemetryData[x][1] = unpack(
                     '<' + data_types[CarTelemetryData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-                print(CarTelemetryData[x][0], ': ', CarTelemetryData[x][1])
 
                 self.index += self.size
 
