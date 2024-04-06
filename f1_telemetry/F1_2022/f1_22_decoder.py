@@ -152,7 +152,7 @@ class f1_22_decoder:
 
     def decode_packet_4(self, data):
         global ParticipantsData
-        ParticipantsData[0] = self.decode_packet(data, ParticipantsData[0:0])
+        ParticipantsData[0] = self.decode_packet(data, ParticipantsData[0])
 
         # self.size = data_types[ParticipantsData[0][2]]['size']
         # ParticipantsData[0][1] = unpack(
