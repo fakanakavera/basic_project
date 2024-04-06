@@ -119,7 +119,7 @@ class f1_22_decoder:
                 carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance, **carmotion_model_dict)
                 carmotion.save()
             except Exception as e:
-                print(e)
+                print(CarMotionData)
                 self.log_error(message=e, event_type="CarMotion", data=carmotion_model_dict)
 
 
