@@ -154,6 +154,9 @@ class f1_22_decoder:
         global ParticipantsData
         ParticipantsData = self.decode_packet(data, ParticipantsData)
         self.total_participants = ParticipantsData[0][1]
+        self.driver_id = []
+        for i in range(self.total_participants):
+            self.driver_id.append(0)
         for p in range(0, self.total_participants-1):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
@@ -169,6 +172,8 @@ class f1_22_decoder:
                 if ParticipantsData[x][0] == 'm_name':
                     ParticipantsData[x][1] = ParticipantsData[x][1].decode(
                         'utf-8').rstrip('\x00')
+                if ParticipantsData[x][0] == 'm_driverId':
+                    self.driver_id[p] = ParticipantsData[x][1]
 
                 self.index += self.size
             
@@ -195,7 +200,7 @@ class f1_22_decoder:
     def decode_packet_6(self, data):
         # os.system('cls')
         print(f"total part: {self.total_participants}")
-        for p in range(0, self.total_participants):
+        for p in range(0, self.total_participants-1):
             for x in range(0, len(CarTelemetryData)):
                 self.size = data_types[CarTelemetryData[x][2]]['size']
                 CarTelemetryData[x][1] = unpack(
@@ -210,7 +215,7 @@ class f1_22_decoder:
                 try:
                     car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
                     print(car_telemetry_model_dict)
-                    car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, **car_telemetry_model_dict)
+                    car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, driverId=self.driver_id[p], **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
                     print(e)
