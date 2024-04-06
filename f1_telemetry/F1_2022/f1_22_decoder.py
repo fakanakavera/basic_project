@@ -152,15 +152,15 @@ class f1_22_decoder:
 
     def decode_packet_4(self, data):
         global ParticipantsData
-        ParticipantsData = self.decode_packet(data, ParticipantsData)
+        ParticipantsData = self.decode_packet(data, ParticipantsData[0:1])
         self.total_participants = ParticipantsData[0][1]
         self.driver_id = []
         for i in range(self.total_participants):
             self.driver_id.append(0)
-        for p in range(0, self.total_participants+1):
+        for p in range(0, self.total_participants):
             print('-----------------------------------------\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
-                
+            
                 self.size = data_types[ParticipantsData[x][2]]['size']
                 ParticipantsData[x][1] = unpack(
                     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
@@ -197,7 +197,7 @@ class f1_22_decoder:
 
     def decode_packet_6(self, data):
         # os.system('cls')
-        for p in range(0, self.total_participants+1):
+        for p in range(0, self.total_participants):
             for x in range(0, len(CarTelemetryData)):
                 self.size = data_types[CarTelemetryData[x][2]]['size']
                 CarTelemetryData[x][1] = unpack(
