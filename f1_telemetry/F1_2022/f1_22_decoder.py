@@ -172,16 +172,16 @@ class f1_22_decoder:
                 if ParticipantsData[x][0] == 'm_name':
                     ParticipantsData[x][1] = ParticipantsData[x][1].decode(
                         'utf-8').rstrip('\x00')
-                if ParticipantsData[x][0] == 'm_driverId':
-                    self.driver_id[p] = ParticipantsData[x][1]
 
                 self.index += self.size
             
-            if self.save_all and self.player_car_index == p:
+            if self.save_all:
                 try:
                     participant_model_dict = self.make_model_dict(ParticipantsData)
                     participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
                     participant.save()
+                    self.driver_id[p] = participant
+                    print(self.driver_id[p])
                 except Exception as e:
                     self.log_error(message=e, event_type="Participant", data=participant_model_dict)
 
