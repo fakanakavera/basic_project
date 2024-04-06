@@ -156,7 +156,7 @@ class f1_22_decoder:
         self.total_participants = ParticipantsData[0][1]
         for p in range(0, ParticipantsData[0][1]):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
-            for x in range(0, len(ParticipantsData)-1):
+            for x in range(0, len(ParticipantsData)):
                 self.size = data_types[ParticipantsData[x][2]]['size']
                 ParticipantsData[x][1] = unpack(
                     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
