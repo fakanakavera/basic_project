@@ -153,7 +153,7 @@ class f1_22_decoder:
     def decode_packet_4(self, data):
         global ParticipantsData
         ParticipantsData = self.decode_packet(data, ParticipantsData)
-
+        self.total_participants = ParticipantsData[0][1]
         for p in range(0, ParticipantsData[0][1]):
             # print('\nParticipant: ', p+1, ' of ', ParticipantsData[0][1])
             for x in range(1, len(ParticipantsData)):
