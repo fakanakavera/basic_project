@@ -209,7 +209,7 @@ class f1_22_decoder:
 
                 self.index += self.size
 
-            if self.save_all and self.player_car_index == p:
+            if self.save_all:
                 try:
                     car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
                     car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, driverId=self.driver_id[p], **car_telemetry_model_dict)
