@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..models import Header
 
-def unique_sessionUIDs(request):
+def unique_sessionUIDs():
     """
     Retrieve unique sessionUIDs from the Headers data.
     """
