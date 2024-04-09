@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import CarTelemetryLapView
-from .views.basic_data import unique_sessionUIDs
+from views.views import CarTelemetryLapView
+from views.basic_data import unique_sessionUIDs
 
 urlpatterns = [
     path('unique-sessionUIDs/', unique_sessionUIDs, name='unique-sessionUIDs'),

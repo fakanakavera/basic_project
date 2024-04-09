@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from f1_telemetry.models import Header
+from ..models import Header
 
 def unique_sessionUIDs(request):
     """
