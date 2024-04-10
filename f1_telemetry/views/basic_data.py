@@ -10,5 +10,4 @@ def unique_sessionUIDs(request):
     # Fetch unique sessionUIDs from the CarTelemetry data
     unique_sessionUIDs = Header.objects.values_list('sessionUID', flat=True).distinct()
     unique_sessionUIDs = list(unique_sessionUIDs)
-    print(f"unique_sessionUIDs: {unique_sessionUIDs}\n")    
     return Response(unique_sessionUIDs)
