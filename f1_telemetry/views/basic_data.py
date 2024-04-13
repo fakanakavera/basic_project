@@ -26,6 +26,14 @@ def get_track_from_sessionUID(request, sessionUID):
     return Response(list(trackids))
 
 @api_view(['GET'])
+def get_all_headers_from_sessionUID(request, sessionUID):
+    """
+    Retrieve all headers from the sessionUID.
+    """
+    headers = Header.objects.filter(sessionUID=sessionUID)
+    return Response(headers)
+
+@api_view(['GET'])
 def test_api(request):
     """
     Test API endpoint.
