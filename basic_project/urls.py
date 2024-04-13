@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('fnk_auth.urls')),
     path('telemetry/', include('f1_telemetry.urls')),
-    # path('telemetry/', include('f1_telemetry.urls')),
+    
 ]
