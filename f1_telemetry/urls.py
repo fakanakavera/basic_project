@@ -1,11 +1,10 @@
 from django.urls import path
 from .views.views import CarTelemetryLapView
-from .views.basic_data import unique_sessionUIDs, test_api, get_track_from_sessionUID, get_all_headers_from_sessionUID
+from .views.basic_data import *
 
 urlpatterns = [
-    path('test/', test_api, name='test'),
     path('get-all-headers-from-sessionUID/<int:sessionUID>/', get_all_headers_from_sessionUID, name='get-all-headers-from-sessionUID'),
-    path('get-track-from-sessionUID/<int:sessionUID>/', get_track_from_sessionUID, name='get-track-from-sessionUID'),
+    path('get-track-from-sessionUID/<int:sessionUID>/', get_trackid_from_sessionUID, name='get-track-from-sessionUID'),
     path('unique-sessionUIDs/', unique_sessionUIDs, name='unique-sessionUIDs'),
-    path('car-telemetry/lap/<int:lap_number>/', CarTelemetryLapView.as_view(), name='car-telemetry-by-lap'),
+    path('car-telemetry/<int:sessionUID>/', get_all_telemetry_from_sessionUID, name='car-telemetry-by-lap-sessionUID'),
 ]
