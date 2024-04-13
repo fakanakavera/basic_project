@@ -1,7 +1,7 @@
 from ..models import Header, PacketSession, CarTelemetry
 
 
-def unique_sessionUIDs() -> list[int]:
+def _unique_sessionUIDs() -> list[int]:
     """
     Retrieve unique sessionUIDs from the Headers data.
     """
@@ -10,14 +10,14 @@ def unique_sessionUIDs() -> list[int]:
     unique_sessionUIDs = list(unique_sessionUIDs)
     return unique_sessionUIDs
 
-def get_trackid_from_sessionUID(sessionUID:int) -> int:
+def _get_trackid_from_sessionUID(sessionUID:int) -> int:
     """
     Retrieve the trackId from the sessionUID.
     """
     trackids = PacketSession.objects.filter(header__sessionUID=sessionUID).values_list('trackId', flat=True).distinct()
     return trackids
 
-def get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
+def _get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
     """
     Retrieve all headers from the sessionUID.
     """
@@ -25,7 +25,7 @@ def get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
     headerids = Header.objects.filter(sessionUID=sessionUID).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
 
-def get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
+def _get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
     """
     Retrieve all telemetry data from the sessionUID.
     """
