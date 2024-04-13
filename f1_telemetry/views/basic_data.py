@@ -18,6 +18,14 @@ def unique_sessionUIDs(request):
     return Response(sessionUID_to_trackid_map)
 
 @api_view(['GET'])
+def get_track_from_sessionUID(request, sessionUID):
+    """
+    Retrieve the trackId from the sessionUID.
+    """
+    trackids = PacketSession.objects.filter(header__sessionUID=sessionUID).values_list('trackId', flat=True).distinct()
+    return Response(list(trackids))
+
+@api_view(['GET'])
 def test_api(request):
     """
     Test API endpoint.
