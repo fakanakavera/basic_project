@@ -18,3 +18,11 @@ def unique_sessionUIDs(request):
     print(sessionUID_to_trackid_map)
     return Response([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
     # return Response(sessionUID_to_trackid_map)
+
+@api_view(['GET'])
+def test_api(request):
+    """
+    Test API endpoint.
+    """
+    print('test_api')
+    return Response([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
