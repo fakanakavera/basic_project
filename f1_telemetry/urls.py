@@ -3,7 +3,7 @@ from .views.views import CarTelemetryLapView
 from .views.basic_data import unique_sessionUIDs, test_api
 
 urlpatterns = [
-    path('test/', test_api, name='test-api'),
+    path('test/', test_api, name='test'),
     path('unique-sessionUIDs/', unique_sessionUIDs, name='unique-sessionUIDs'),
     path('car-telemetry/lap/<int:lap_number>/', CarTelemetryLapView.as_view(), name='car-telemetry-by-lap'),
 ]
