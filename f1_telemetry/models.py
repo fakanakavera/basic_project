@@ -195,9 +195,6 @@ class CarTelemetry(models.Model):
     surfaceTypeFL = models.PositiveSmallIntegerField(default=0)
     surfaceTypeFR = models.PositiveSmallIntegerField(default=0)
 
-
-
-
 class Log(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event_type = models.CharField(max_length=100)
@@ -205,3 +202,9 @@ class Log(models.Model):
 
     def __str__(self):
         return f"{self.created_at} - {self.event_type}"
+    
+class session_type(models.Model):
+    session_id = models.IntegerField(default=0)
+    session_type = models.CharField(max_length=100)
+    def __str__(self):
+        return f"{self.session_type}"
