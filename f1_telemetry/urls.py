@@ -1,6 +1,5 @@
 from django.urls import path
-from .views.views import CarTelemetryLapView
-from .views.basic_data import *
+from .views.basic_data import get_all_headers_from_sessionUID, get_trackid_from_sessionUID, unique_sessionUIDs, get_all_telemetry_from_sessionUID
 
 urlpatterns = [
     path('get-all-headers-from-sessionUID/<int:sessionUID>/', get_all_headers_from_sessionUID, name='get-all-headers-from-sessionUID'),
