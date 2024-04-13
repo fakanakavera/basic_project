@@ -7,8 +7,7 @@ def _unique_sessionUIDs() -> list[int]:
     """
     # Fetch unique sessionUIDs from the CarTelemetry data
     unique_sessionUIDs = Header.objects.values_list('sessionUID', flat=True).distinct()
-    unique_sessionUIDs = list(map(int, unique_sessionUIDs))
-    print(unique_sessionUIDs)
+    unique_sessionUIDs = list(map(str, unique_sessionUIDs))
     return unique_sessionUIDs
 
 def _get_trackid_from_sessionUID(sessionUID:int) -> int:
