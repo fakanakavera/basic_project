@@ -22,7 +22,7 @@ def _get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
     Retrieve all headers from the sessionUID.
     """
     # fetach all headers id from the sessionUID
-    headerids = Header.objects.filter(sessionUID=sessionUID, cartelemetry__lap__currentLapNum=1, cartelemetry__participant__aiControlled=False).values_list('id', flat=True).distinct().order_by('id')
+    headerids = Header.objects.filter(sessionUID=sessionUID, cartelemetry__lap__currentLapNum=111, cartelemetry__participant__aiControlled=False).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
 
 def _get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
