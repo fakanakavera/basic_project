@@ -29,6 +29,7 @@ def _get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
     """
     Retrieve all telemetry data from the sessionUID.
     """
+    print(type(sessionUID))
     # fetch all telemetry data from the sessionUID
     telemetry_data = CarTelemetry.objects.filter(header__sessionUID=sessionUID).values()
     print(len(telemetry_data))
