@@ -13,7 +13,7 @@ def unique_sessionUIDs(request):
     sessionUID_to_trackid_map = {}
     for sessionUID in unique_sessionUIDs:
         trackids = PacketSession.objects.filter(header__sessionUID=sessionUID).values_list('trackId', flat=True).distinct()
-        sessionUID_to_trackid_map[sessionUID] = list(trackids)
+        sessionUID_to_trackid_map[str(sessionUID)] = list(trackids)
 
     return Response(sessionUID_to_trackid_map)
 
