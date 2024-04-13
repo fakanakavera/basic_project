@@ -30,8 +30,9 @@ def get_all_headers_from_sessionUID(request, sessionUID):
     """
     Retrieve all headers from the sessionUID.
     """
-    headers = Header.objects.filter(sessionUID=sessionUID)
-    return Response(list(headers.objects.values_list('header', flat=True).distinct().order_by('header')))
+    # fetach all headers id from the sessionUID
+    headerids = Header.objects.filter(sessionUID=sessionUID).values_list('id', flat=True).distinct().order_by('header')
+    return Response(list(headerids))
 
 @api_view(['GET'])
 def test_api(request):
