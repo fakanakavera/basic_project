@@ -1,0 +1,8 @@
+
+get track id from sessionUIDs
+get track name from track id
+make dropdown with track name and filter sessionUIDs
+   dropdown base on track id
+need to filter driver? might have only self data?
+with one session, track and driver selected
+   get telemetry data
