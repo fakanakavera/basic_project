@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .funcs import _unique_sessionUIDs, _get_trackid_from_sessionUID, _get_all_headers_from_sessionUID, _get_all_telemetry_from_sessionUID
+from .funcs import _unique_sessionUIDs, _get_trackid_from_sessionUID, _get_all_headers_from_sessionUID, _get_all_telemetry_from_sessionUID, _test_api
 
 @api_view(['GET'])
 def unique_sessionUIDs(request):
@@ -20,4 +20,4 @@ def get_all_telemetry_from_sessionUID(request, sessionUID):
 
 @api_view(['GET'])
 def test_api(request, sessionUID:int, lap_num:int):
-    return Response(_get_all_headers_from_sessionUID(sessionUID, lap_num))
+    return Response(_test_api(sessionUID, lap_num))
