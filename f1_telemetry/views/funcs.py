@@ -17,12 +17,19 @@ def _get_trackid_from_sessionUID(sessionUID:int) -> int:
     trackids = PacketSession.objects.filter(header__sessionUID=sessionUID).values_list('trackId', flat=True).distinct()
     return trackids
 
-def _get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
+def _get_all_headers_from_sessionUID(sessionUID:int, lap_num:int) -> list[int]:
     """
     Retrieve all headers from the sessionUID.
+
+
+
+    needs work
     """
     # fetach all headers id from the sessionUID
-    headerids = Header.objects.filter(sessionUID=sessionUID, cartelemetry__lap__currentLapNum=111, cartelemetry__participant__aiControlled=False).values_list('id', flat=True).distinct().order_by('id')
+    headerids = Header.objects.filter(
+        sessionUID=sessionUID, 
+        cartelemetry__lap__currentLapNum=lap_num, 
+        cartelemetry__participant__aiControlled=False).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
 
 def _get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
