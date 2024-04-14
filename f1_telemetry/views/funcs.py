@@ -55,4 +55,14 @@ def _test_api(sessionUID:int, lap_num:int) -> list[int]:
         sessionUID=sessionUID,
         lap__currentLapNum=lap_num
         ).values_list('id', flat=True).distinct().order_by('id')
+    _min = headerids.first()
+    _max = headerids.last()
+    lap_num += 1
+    next_headerids = Header.objects.filter(
+        sessionUID=sessionUID,
+        lap__currentLapNum=lap_num
+        ).values_list('id', flat=True).distinct().order_by('id')
+    _next_min = next_headerids.first()
+    _next_max = next_headerids.last()
+    print(_min, _max, _next_min, _next_max)
     return list(headerids)
