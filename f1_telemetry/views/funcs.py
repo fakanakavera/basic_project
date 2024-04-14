@@ -54,5 +54,7 @@ def _test_api(sessionUID:int, lap_num:int) -> list[int]:
     headerids = Header.objects.filter(
         sessionUID=sessionUID, 
         packetId=2,
-        lap__currentLapNum=lap_num).values_list('id', flat=True).distinct().order_by('id')
+        lap__currentLapNum=lap_num,
+        participant__aiControlled=False
+        ).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
