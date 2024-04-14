@@ -52,5 +52,5 @@ def _test_api(sessionUID:int, lap_num:int) -> list[int]:
     """
     # fetach all headers id from the sessionUID
     headerids = Header.objects.filter(
-        sessionUID=sessionUID).values_list('id', flat=True).distinct().order_by('id')
+        lap__currentLapNum=lap_num).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
