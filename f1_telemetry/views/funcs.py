@@ -66,5 +66,5 @@ def _test_api(sessionUID:int, lap_num:int) -> list[int]:
 
     # fetach all headers id from the sessionUID
     first, last = _get_first_last_header_from_sessionUID(sessionUID)
-    driverids = _get_driverid_from_headerid_range((first, last), 16)
+    driverids = _get_driverid_from_headerid_range((first, last), 99)
     return [(first, last), driverids]
