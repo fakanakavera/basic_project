@@ -1,4 +1,4 @@
-from ..models import Header, PacketSession, CarTelemetry
+from ..models import Header, PacketSession, CarTelemetry, Participant
 from django.db.models import Max, Min
 
 
@@ -54,8 +54,17 @@ def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
     )
     return result['first_id'], result['last_id']
 
+def _get_driverid_from_headerid_range(headerid_range:tuple[int, int]) -> list[int]:
+    """
+    Retrieve the driverId from the headerid range.
+    """
+    # fetch the driverId from the headerid range
+    driverids = Participant.objects.filter(header__id__range=headerid_range).values_list('participant__driverId', flat=True).distinct()
+    return list(driverids)
+
 def _test_api(sessionUID:int, lap_num:int) -> list[int]:
 
     # fetach all headers id from the sessionUID
     first, last = _get_first_last_header_from_sessionUID(sessionUID)
-    return list([first, last])
+    driverids = _get_driverid_from_headerid_range((first, last))
+    return driverids
