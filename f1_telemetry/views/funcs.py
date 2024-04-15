@@ -59,7 +59,7 @@ def _get_driverid_from_headerid_range(headerid_range:tuple[int, int]) -> list[in
     Retrieve the driverId from the headerid range.
     """
     # fetch the driverId from the headerid range
-    driverids = Participant.objects.filter(header__id__range=headerid_range).values_list('participant__driverId', flat=True).distinct()
+    driverids = CarTelemetry.objects.filter(header__id__range=headerid_range).values_list('participant__driverId', flat=True).distinct()
     return list(driverids)
 
 def _test_api(sessionUID:int, lap_num:int) -> list[int]:
