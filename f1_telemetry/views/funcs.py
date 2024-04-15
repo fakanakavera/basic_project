@@ -1,4 +1,5 @@
 from ..models import Header, PacketSession, CarTelemetry
+from django.db.models import Max, Min
 
 
 def _unique_sessionUIDs() -> list[int]:
@@ -42,27 +43,19 @@ def _get_all_telemetry_from_sessionUID(sessionUID:int) -> list[CarTelemetry]:
     print(len(telemetry_data))
     return list(telemetry_data)
 
+def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
+    """
+    Retrieve the first and last header from the sessionUID.
+    """
+    # fetch the first and last header from the sessionUID
+    result = Header.objects.filter(sessionUID=sessionUID).aggregate(
+        first_id=Min('id'), 
+        last_id=Max('id')
+    )
+    return result['first_id'], result['last_id']
+
 def _test_api(sessionUID:int, lap_num:int) -> list[int]:
-    """
-    Retrieve all headers from the sessionUID.
 
-
-
-    needs work
-    """
     # fetach all headers id from the sessionUID
-    headerids = Header.objects.filter(
-        sessionUID=sessionUID,
-        lap__currentLapNum=lap_num
-        ).values_list('id', flat=True).distinct().order_by('id')
-    _min = headerids.first()
-    _max = headerids.last()
-    lap_num += 1
-    next_headerids = Header.objects.filter(
-        sessionUID=sessionUID,
-        lap__currentLapNum=lap_num
-        ).values_list('id', flat=True).distinct().order_by('id')
-    _next_min = next_headerids.first()
-    _next_max = next_headerids.last()
-    print(_min, _max, _next_min, _next_max)
-    return list(headerids)
+    first, last = _get_first_last_header_from_sessionUID(sessionUID)
+    return list([first, last])
