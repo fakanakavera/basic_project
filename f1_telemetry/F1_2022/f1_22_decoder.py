@@ -137,6 +137,8 @@ class f1_22_decoder:
 
     def decode_packet_2(self, data):
         global LapData
+        # lap should have data for all participants
+        # all car index are the same throughout the session
         LapData = self.decode_packet(data, LapData)
         
         if self.save_all or self.save_lap:
