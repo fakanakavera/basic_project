@@ -54,12 +54,12 @@ def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
     )
     return result['first_id'], result['last_id']
 
-def _get_driverid_from_headerid_range(headerid_range:tuple[int, int]) -> list[int]:
+def _get_driverid_from_headerid_range(headerid_range:tuple[int, int], driver_num:int) -> list[int]:
     """
     Retrieve the driverId from the headerid range.
     """
     # fetch the driverId from the headerid range
-    driverids = Participant.objects.filter(header__id__range=headerid_range).values_list('driverId', flat=True).distinct()
+    driverids = Participant.objects.filter(header__id__range=headerid_range, raceNumber=driver_num).values_list('driverId', flat=True).distinct()
     return list(driverids)
 
 def _test_api(sessionUID:int, lap_num:int) -> list[int]:
