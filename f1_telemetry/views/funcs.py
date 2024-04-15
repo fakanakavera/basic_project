@@ -40,7 +40,7 @@ def _get_all_telemetry_from_driverId_headerid_range(driverId:list[int], headerid
     # fetch all telemetry from the driverId and headerid range
     telemetryids = CarTelemetry.objects.filter(
         header__id__range=headerid_range, 
-        driverId__range=driverId).values_list('id', flat=True).distinct().order_by('id')
+        driverId__in=driverId).values_list('id', flat=True).distinct().order_by('id')
     return list(telemetryids)
 
 def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
