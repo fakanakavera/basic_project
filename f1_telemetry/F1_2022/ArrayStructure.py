@@ -7,6 +7,7 @@ LapData = []  # Create an empty array
 CarSetupData = []  # Create an empty array
 CarTelemetryData = []  # Create an empty array
 ParticipantsData = []  # Create an empty array
+NumofActiveCars = []  # Create an empty array
 # Initialize data array -- BEGIN FUNCTION
 
 
@@ -188,5 +189,6 @@ def initArray():
     ParticipantsData.append(['m_name', 0, 'char'])
     ParticipantsData.append(['m_yourTelemetry', 0, 'uint8'])
 
+    NumofActiveCars.append(['m_numActiveCars', 0, 'uint8'])
 
 initArray()  # Execute the function
