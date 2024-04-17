@@ -3,31 +3,25 @@ import pickle
 import argparse
 import time
 
-class UDPCapture:
-    def __init__(self, ip_address, port, packet_size=1464):
-        self.ip_address = ip_address
-        self.port = port
-        self.packet_size = packet_size
+class UDPResender:
+    def __init__(self):
         self.udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.udp_socket.bind((self.ip_address, self.port))
+        self.PACKET_SIZE = 1464
 
-    def capture_packets(self, num_packets, file_path):
-        packets = []
-        last_time = None
-        for _ in range(num_packets):
-            data, addr = self.udp_socket.recvfrom(self.packet_size)
-            if last_time is not None:
-                delay = time.time() - last_time
-                packets.append((data, addr, delay))
-            else:
-                packets.append((data, addr, 0))  # First packet has no delay
-            last_time = time.time()
-        
-        # Serialize and save the packets to a file
-        with open(file_path, 'wb') as file:
-            pickle.dump(packets, file)
-        
-        print(f"Captured and saved {num_packets} packets to {file_path}")
+    def load_and_resend_packets(self, file_path, target_ip, target_port):
+        with open(file_path, 'rb') as file:
+            packets = pickle.load(file)
+
+        last_send_time = time.time()
+        for data, _, delay in packets:
+            # Wait for the delay before sending the next packet
+            while time.time() < last_send_time + delay:
+                time.sleep(0.0001)  # High-resolution sleep
+            
+            self.udp_socket.sendto(data[:self.PACKET_SIZE], (target_ip, target_port))
+            last_send_time = time.time()
+
+        print(f"Resent {len(packets)} packets to {target_ip}:{target_port} with simulated delays")
 
 
 class UDPResender:
