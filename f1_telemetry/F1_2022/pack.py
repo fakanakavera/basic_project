@@ -1,6 +1,7 @@
 import socket
 import pickle
 import argparse
+import time
 
 class UDPCapture:
     def __init__(self, ip_address, port, packet_size=1464):
@@ -12,15 +13,22 @@ class UDPCapture:
 
     def capture_packets(self, num_packets, file_path):
         packets = []
+        last_time = None
         for _ in range(num_packets):
             data, addr = self.udp_socket.recvfrom(self.packet_size)
-            packets.append((data, addr))
+            if last_time is not None:
+                delay = time.time() - last_time
+                packets.append((data, addr, delay))
+            else:
+                packets.append((data, addr, 0))  # First packet has no delay
+            last_time = time.time()
         
         # Serialize and save the packets to a file
         with open(file_path, 'wb') as file:
             pickle.dump(packets, file)
         
         print(f"Captured and saved {num_packets} packets to {file_path}")
+
 
 class UDPResender:
     def __init__(self):
@@ -31,11 +39,13 @@ class UDPResender:
         with open(file_path, 'rb') as file:
             packets = pickle.load(file)
         
-        # Resend packets
-        for data, _ in packets:
+        # Resend packets with the recorded delay
+        for data, _, delay in packets:  # Adjusted to unpack delay
+            time.sleep(delay)  # Wait for the delay before sending the packet
             self.udp_socket.sendto(data, (target_ip, target_port))
         
-        print(f"Resent {len(packets)} packets to {target_ip}:{target_port}")
+        print(f"Resent {len(packets)} packets to {target_ip}:{target_port} with simulated delays")
+
 
 def main():
     parser = argparse.ArgumentParser(description="UDP Packets Capture and Resend Tool")
