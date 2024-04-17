@@ -137,6 +137,7 @@ class f1_22_decoder_v2:
                 packet_session, _ = PacketSession.objects.get_or_create(header=self.header_instance, **packet_session_model_dict)
                 packet_session.save()
             except Exception as e:
+                print(e)
                 self.log_error(message=e, event_type="PacketSession", data=packet_session_model_dict)
 
     def decode_packet_2(self, data):
