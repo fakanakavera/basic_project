@@ -87,7 +87,8 @@ class f1_22_decoder_v2:
             
             if decode_name:
                 if data_format[x][0] == 'm_name':
-                    data_format[x][1] = self.decode_name(data_format[x][1])
+                    data_format[x][1] = data_format[x][1].decode(
+                        'utf-8').rstrip('\x00')
             
             self.index += self.size
         
