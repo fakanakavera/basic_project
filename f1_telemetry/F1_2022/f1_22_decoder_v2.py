@@ -164,35 +164,33 @@ class f1_22_decoder_v2:
 
     def decode_packet_4(self, data):
         global ParticipantsData
-        global NumofActiveCars
-        NumofActiveCars = self.decode_packet(data, NumofActiveCars)
-        print(f"NumofActiveCars: {NumofActiveCars}")
         # ParticipantsData[0] = self.decode_packet(data, ParticipantsData[0])
 
-        # self.size = data_types[ParticipantsData[0][2]]['size']
-        # ParticipantsData[0][1] = unpack(
-        #     '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
+        self.size = data_types[ParticipantsData[0][2]]['size']
+        ParticipantsData[0][1] = unpack(
+            '<' + data_types[ParticipantsData[0][2]]['format'], data[self.index:self.index+self.size])[0]
         
-        # self.index += self.size
+        self.index += self.size
     
-        self.total_participants = NumofActiveCars[0][1]
-        self.driver_id = [0 for _ in range(self.total_participants)]
+        self.total_participants = ParticipantsData[0][1]
+        self.driver_id = []
+        for i in range(self.total_participants):
+            self.driver_id.append(0)
         for p in range(0, self.total_participants):
-            ParticipantsData = self.decode_packet(data, ParticipantsData[1:], decode_name=True)
+            for x in range(1, len(ParticipantsData)):
             
-            # for x in range(0, len(ParticipantsData)):
-                # self.size = data_types[ParticipantsData[x][2]]['size']
-                # ParticipantsData[x][1] = unpack(
-                #     '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
+                self.size = data_types[ParticipantsData[x][2]]['size']
+                ParticipantsData[x][1] = unpack(
+                    '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
-                # if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
-                #     self.player_car_index = p
+                if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
+                    self.player_car_index = p
 
-                # if ParticipantsData[x][0] == 'm_name':
-                #     ParticipantsData[x][1] = ParticipantsData[x][1].decode(
-                #         'utf-8').rstrip('\x00')
-                # self.index += self.size
-        
+                if ParticipantsData[x][0] == 'm_name':
+                    ParticipantsData[x][1] = ParticipantsData[x][1].decode(
+                        'utf-8').rstrip('\x00')
+                self.index += self.size
+            
             if self.save_all:
                 try:
                     participant_model_dict = self.make_model_dict(ParticipantsData)
