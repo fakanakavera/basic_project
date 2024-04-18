@@ -177,8 +177,8 @@ class f1_22_decoder_v2:
     
         self.total_participants = NumofActiveCars[0][1]
         self.driver_id = [0 for _ in range(self.total_participants)]
-        for p in range(1, self.total_participants):
-            ParticipantsData = self.decode_packet(data, ParticipantsData, decode_name=True)
+        for p in range(0, self.total_participants):
+            ParticipantsData = self.decode_packet(data, ParticipantsData[1:], decode_name=True)
             
             # for x in range(0, len(ParticipantsData)):
                 # self.size = data_types[ParticipantsData[x][2]]['size']
