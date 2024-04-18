@@ -44,7 +44,7 @@ class UDPResender:
         for data, _, delay in packets:
             # Wait for the delay before sending the next packet
             while time.time() < last_send_time + delay:
-                time.sleep(0.0001)  # High-resolution sleep
+                time.sleep(0.00001)  # High-resolution sleep
             
             self.udp_socket.sendto(data[:self.PACKET_SIZE], (target_ip, target_port))
             last_send_time = time.time()
