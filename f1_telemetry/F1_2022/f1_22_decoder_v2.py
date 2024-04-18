@@ -86,9 +86,13 @@ class f1_22_decoder_v2:
                 '<' + data_types[data_format[x][2]]['format'], data[self.index:self.index+self.size])[0]
             
             if decode_name:
-                if data_format[x][0] == 'm_name':
-                    data_format[x][1] = data_format[x][1].decode(
-                        'utf-8').rstrip('\x00')
+                try:
+                    if data_format[x][0] == 'm_name':
+                        data_format[x][1] = data_format[x][1].decode(
+                            'utf-8').rstrip('\x00')
+                except Exception as e:
+                    print(e)
+                    print(data_format[x][1])
             
             self.index += self.size
         
@@ -173,7 +177,7 @@ class f1_22_decoder_v2:
     
         self.total_participants = NumofActiveCars[0][1]
         self.driver_id = [0 for _ in range(self.total_participants)]
-        for p in range(0, self.total_participants):
+        for p in range(1, self.total_participants):
             ParticipantsData = self.decode_packet(data, ParticipantsData, decode_name=True)
             
             # for x in range(0, len(ParticipantsData)):
