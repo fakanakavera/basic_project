@@ -30,6 +30,6 @@ if __name__ == "__main__":
     # Create an instance of the decoder
     # Pass the arguments as a dictionary
     print(args.__dict__)
-    decoder = f1_22_decoder_v3(args.__dict__)
+    decoder = f1_22_decoder_v3(**args.__dict__)
     # Example usage
     decoder.decoder_loop()
