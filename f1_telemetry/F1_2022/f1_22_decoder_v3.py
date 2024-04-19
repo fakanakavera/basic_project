@@ -41,9 +41,9 @@ class f1_22_decoder_v3:
         self.save_participants = kwargs.get('save_participants', False)
 
         self.header_instance = False
-        self.participant = False
-        self.total_participants = 0
-        # self.sessionUID=-1
+        self.participant_list = False
+        self.total_participants = -1
+        self.sessionUID=-1
         # self.sessionTime=-1
         # self.player_car_index = -1
 
@@ -122,7 +122,7 @@ class f1_22_decoder_v3:
             data, addr = self.udp.recvfrom(self.PACKET_SIZE)
             self.decode_header(data)
 
-    def decode_packet(self, packet_data:dict, data_format:dict) -> dict:
+    def decode_packet(self, packet_data:dict, data_format:dict, decode_name:bool=False) -> dict:
         """
             Decodes the packet data according to the data format.
             it uses the self.index to keep track of the position in the data.
@@ -132,6 +132,7 @@ class f1_22_decoder_v3:
             args:
                 packet_data: the packet data
                 data_format: the global dictionary for the packet
+                decode_name: if the name should be decoded or not
 
             returns:
                 data_format: the data_format which is now filled with the unpacked data. its global
@@ -145,6 +146,14 @@ class f1_22_decoder_v3:
             packet_size = packet_data[self.index:self.index+self.size]
             # unpack the next field in the packet and assign it to the data_format
             data_format[x][1] = unpack('<' + packet_type, packet_size)[0]
+
+            if decode_name:
+                try:
+                    if data_format[x][0] == 'm_name':
+                        data_format[x][1] = data_format[x][1].decode('utf-8').rstrip('\x00')
+                except Exception as e:
+                    self.log_error(message=e, event_type="DecodeName", data=data_format)
+
             # increment the index to the next field in the packet
             self.index += self.size
 
@@ -221,18 +230,21 @@ class f1_22_decoder_v3:
                 };
         """
         global CarMotionData
-        CarMotionData = self.decode_packet(packet_data, CarMotionData)
+        for p in range(0, self.total_participants):
+            CarMotionData = self.decode_packet(packet_data, CarMotionData)
+                
+            if self.save_all or self.save_carmotion:
+                try:
+                    carmotion_model_dict = self.make_model_dict(CarMotionData)
+                    carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance, 
+                                                                   driverId=self.driver_id[p], 
+                                                                   **carmotion_model_dict)
+                    carmotion.save()
+                except Exception as e:
+                    self.log_error(message=e, event_type="CarMotion", data=carmotion_model_dict)
             
-        if self.save_all or self.save_carmotion:
-            try:
-                carmotion_model_dict = self.make_model_dict(CarMotionData)
-                carmotion, _ = CarMotion.objects.get_or_create(header=self.header_instance, **carmotion_model_dict)
-                carmotion.save()
-            except Exception as e:
-                self.log_error(message=e, event_type="CarMotion", data=carmotion_model_dict)
-        
-        if self.print_carmotion:
-            self.print_packet(CarMotionData, title="CarMotion")
+            if self.print_carmotion:
+                self.print_packet(CarMotionData, title="CarMotion")
 
     def decode_packet_1(self, packet_data:dict) -> None:
         """ Already decoding everything in the packet."""
@@ -295,18 +307,21 @@ class f1_22_decoder_v3:
             };
         """
         global LapData
-        LapData = self.decode_packet(packet_data, LapData)
-        
-        if self.save_all or self.save_lap:
-            try:
-                lap_model_dict = self.make_model_dict(LapData)
-                lap, _ = Lap.objects.get_or_create(header=self.header_instance, **lap_model_dict)
-                lap.save()
-            except Exception as e:
-                self.log_error(message=e, event_type="Lap", data=lap_model_dict)
-        
-        if self.print_lap:
-            self.print_packet(LapData, title="Lap")
+        for p in range(0, self.total_participants):
+            LapData = self.decode_packet(packet_data, LapData)
+            
+            if self.save_all or self.save_lap:
+                try:
+                    lap_model_dict = self.make_model_dict(LapData)
+                    lap, _ = Lap.objects.get_or_create(header=self.header_instance, 
+                                                       driverId=self.driver_id[p],
+                                                       **lap_model_dict)
+                    lap.save()
+                except Exception as e:
+                    self.log_error(message=e, event_type="Lap", data=lap_model_dict)
+            
+            if self.print_lap:
+                self.print_packet(LapData, title="Lap")
         
     def decode_packet_3(self, packet_data:dict) -> None:
         pass
@@ -347,18 +362,21 @@ class f1_22_decoder_v3:
             };
         """
         global CarSetupData
-        CarSetupData = self.decode_packet(packet_data, CarSetupData)
-        
-        if self.save_all or self.save_carsetup:
-            try:
-                carsetup_model_dict = self.make_model_dict(CarSetupData)
-                carsetup, _ = CarSetup.objects.get_or_create(header=self.header_instance, **carsetup_model_dict)
-                carsetup.save()
-            except Exception as e:
-                self.log_error(message=e, event_type="CarSetup", data=carsetup_model_dict)
+        for p in range(0, self.total_participants):
+            CarSetupData = self.decode_packet(packet_data, CarSetupData)
+            
+            if self.save_all or self.save_carsetup:
+                try:
+                    carsetup_model_dict = self.make_model_dict(CarSetupData)
+                    carsetup, _ = CarSetup.objects.get_or_create(header=self.header_instance,
+                                                                 driverId=self.driver_id[p],
+                                                                  **carsetup_model_dict)
+                    carsetup.save()
+                except Exception as e:
+                    self.log_error(message=e, event_type="CarSetup", data=carsetup_model_dict)
 
-        if self.print_carsetup:
-            self.print_packet(CarSetupData, title="CarSetup")
+            if self.print_carsetup:
+                self.print_packet(CarSetupData, title="CarSetup")
     
         
     
@@ -376,6 +394,11 @@ class f1_22_decoder_v3:
 
     def decode_packet_4(self, data):
         """
+            The participants data is always the same throughout the same session.
+            We only need to decode it once.
+            We check if the self.sessionUID is -1, if it is we decode the participants data.
+            If it is not -1 we skip the decoding of the participants data.
+            
             struct ParticipantData{
                 uint8 m_aiControlled;   // Whether the vehicle is AI (1) or Human (0) controlled
                 uint8 m_driverId;       // Driver id - see appendix, 255 if network human
@@ -396,48 +419,72 @@ class f1_22_decoder_v3:
                 ParticipantData m_participants[22];
             };
         """
-        global ParticipantsData
-        global NumofActiveCars
+        if self.sessionUID == -1:
+            global ParticipantsData
+            global NumofActiveCars
 
-        NumofActiveCars = self.decode_packet(data, NumofActiveCars)
+            NumofActiveCars = self.decode_packet(data, NumofActiveCars)
+            self.total_participants = NumofActiveCars[0][1]
 
-        if self.print_numofactivecars:
-            self.print_packet(NumofActiveCars, title="NumofActiveCars")
+            if self.print_numofactivecars:
+                self.print_packet(NumofActiveCars, title="NumofActiveCars")
 
-        self.size = data_types[ParticipantsData[0][2]]['size']
-        data_type = data_types[ParticipantsData[0][2]]['format']
-        packet_size = data[self.index:self.index+self.size]
-        ParticipantsData[0][1] = unpack('<' + data_type, packet_size)[0]
+            self.driver_id = [0 for _ in len(self.total_participants)]
+
+            for p in range(0, self.total_participants):
+                ParticipantsData = self.decode_packet(data, ParticipantsData, decode_name=True)
+
+                if self.save_all or self.save_participants:
+                    try:
+                        participant_model_dict = self.make_model_dict(ParticipantsData)
+                        participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
+                        self.driver_id[p] = participant
+                        participant.save()
+                    except Exception as e:
+                        self.log_error(message=e, event_type="Participant", data=participant_model_dict)
+
+                if self.print_participants:
+                    self.print_packet(ParticipantsData, title="Participants")
+
+
+
+        # self.size = data_types[ParticipantsData[0][2]]['size']
+        # data_type = data_types[ParticipantsData[0][2]]['format']
+        # packet_size = data[self.index:self.index+self.size]
+        # ParticipantsData[0][1] = unpack('<' + data_type, packet_size)[0]
         
-        self.index += self.size
+        # self.index += self.size
+        # self.total_participants = ParticipantsData[0][1]
     
-        self.total_participants = ParticipantsData[0][1]
-        self.driver_id = []
-        for i in range(self.total_participants):
-            self.driver_id.append(0)
-        for p in range(0, self.total_participants):
-            for x in range(1, len(ParticipantsData)):
+        # for p in range(0, self.total_participants):
+        #     for x in range(1, len(ParticipantsData)):
             
-                self.size = data_types[ParticipantsData[x][2]]['size']
-                ParticipantsData[x][1] = unpack(
-                    '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
+        #         self.size = data_types[ParticipantsData[x][2]]['size']
+        #         ParticipantsData[x][1] = unpack(
+        #             '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
 
-                # if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
-                #     self.player_car_index = p
+        #         # if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
+        #         #     self.player_car_index = p
 
-                if ParticipantsData[x][0] == 'm_name':
-                    ParticipantsData[x][1] = ParticipantsData[x][1].decode(
-                        'utf-8').rstrip('\x00')
-                self.index += self.size
+        #         if ParticipantsData[x][0] == 'm_name':
+        #             ParticipantsData[x][1] = ParticipantsData[x][1].decode(
+        #                 'utf-8').rstrip('\x00')
+        #         self.index += self.size
             
-            if self.save_all or self.save_participants:
-                try:
-                    participant_model_dict = self.make_model_dict(ParticipantsData)
-                    participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
-                    self.driver_id[p] = participant
-                    participant.save()
-                except Exception as e:
-                    self.log_error(message=e, event_type="Participant", data=participant_model_dict)
+        #     if self.save_all or self.save_participants:
+        #         try:
+        #             participant_model_dict = self.make_model_dict(ParticipantsData)
+        #             participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
+        #             self.driver_id[p] = participant
+        #             participant.save()
+        #         except Exception as e:
+        #             self.log_error(message=e, event_type="Participant", data=participant_model_dict)
+
+
+
+
+
+
 
     
 

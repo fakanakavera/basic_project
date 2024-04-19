@@ -19,8 +19,21 @@ class Header(models.Model):
         return f"{self.sessionUID}-{self.sessionTime}"
 
 
+class Participant(models.Model):
+    header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    aiControlled = models.BooleanField()
+    driverId = models.PositiveSmallIntegerField(default=9999)
+    networkId = models.PositiveSmallIntegerField(default=0)
+    teamId = models.PositiveSmallIntegerField(default=0)
+    myTeam = models.BooleanField()
+    raceNumber = models.PositiveSmallIntegerField(default=0)
+    nationality = models.PositiveSmallIntegerField(default=0)
+    name = models.CharField(max_length=100)
+    yourTelemetry = models.BooleanField()
+
 class CarMotion(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    driverId = models.ForeignKey(Participant, on_delete=models.CASCADE)
     worldPositionX = models.FloatField(default=0.0)
     worldPositionY = models.FloatField(default=0.0)
     worldPositionZ = models.FloatField(default=0.0)
@@ -95,6 +108,7 @@ class PacketSession(models.Model):
     
 class Lap(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)
+    driverId = models.ForeignKey(Participant, on_delete=models.CASCADE)
     lastLapTimeInMS = models.PositiveIntegerField(default=0)                     #0
     currentLapTimeInMS = models.PositiveIntegerField(default=0)                  #1
     sector1TimeInMS = models.PositiveIntegerField(default=0)                     #2
@@ -124,6 +138,7 @@ class Lap(models.Model):
 
 class CarSetup(models.Model):
     header = models.OneToOneField(Header, on_delete=models.CASCADE)
+    driverId = models.ForeignKey(Participant, on_delete=models.CASCADE)
     frontWing = models.PositiveSmallIntegerField(default=0)                  #0
     rearWing = models.PositiveSmallIntegerField(default=0)                   #1
     onThrottle = models.PositiveSmallIntegerField(default=0)                 #2
@@ -147,18 +162,6 @@ class CarSetup(models.Model):
     ballast = models.PositiveSmallIntegerField(default=0)
     fuelLoad = models.FloatField(default=0.0)
 
-class Participant(models.Model):
-    header = models.ForeignKey(Header, on_delete=models.CASCADE)
-    numActiveCars = models.PositiveSmallIntegerField(default=0)
-    aiControlled = models.BooleanField()
-    driverId = models.PositiveSmallIntegerField(default=9999)
-    networkId = models.PositiveSmallIntegerField(default=0)
-    teamId = models.PositiveSmallIntegerField(default=0)
-    myTeam = models.BooleanField()
-    raceNumber = models.PositiveSmallIntegerField(default=0)
-    nationality = models.PositiveSmallIntegerField(default=0)
-    name = models.CharField(max_length=100)
-    yourTelemetry = models.BooleanField()
 
 class CarTelemetry(models.Model):
     header = models.ForeignKey(Header, on_delete=models.CASCADE)

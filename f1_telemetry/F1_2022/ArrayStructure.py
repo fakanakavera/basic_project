@@ -178,7 +178,8 @@ def initArray():
     CarTelemetryData.append(['m_surfaceTypeFL', 0, 'uint8'])
     CarTelemetryData.append(['m_surfaceTypeFR', 0, 'uint8'])
 
-    ParticipantsData.append(['m_numActiveCars', 0, 'uint8'])
+    # now we decode the number of active cars before we decode the participants data
+    # ParticipantsData.append(['m_numActiveCars', 0, 'uint8'])
     ParticipantsData.append(['m_aiControlled', 0, 'uint8'])
     ParticipantsData.append(['m_driverId', 0, 'uint8'])
     ParticipantsData.append(['m_networkId', 0, 'uint8'])
