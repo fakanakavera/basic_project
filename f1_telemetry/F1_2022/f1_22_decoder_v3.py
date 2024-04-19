@@ -110,10 +110,10 @@ class f1_22_decoder_v3:
             os.system('cls' if os.name == 'nt' else 'clear')
 
         if title:
-            print(f"\n{title}\n")
+            print(f"{title}")
 
         for key, value, type in data:
-            print(f"{key}: {value}\n")
+            print(f"{key}: {value}")
     
     def decoder_loop(self):
         while self.decoder_loop_running:
