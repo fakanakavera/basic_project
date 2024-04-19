@@ -20,6 +20,8 @@ class f1_22_decoder_v3:
         self.PACKET_SIZE = 1464    # Amount of bytes in packet
 
         self.decoder_loop_running = True
+
+        print(kwargs)
         
         self.clear_screen = kwargs.get('clear_screen', False)
         self.print_header = kwargs.get('print_header', False)
