@@ -137,7 +137,7 @@ class Lap(models.Model):
 
 
 class CarSetup(models.Model):
-    header = models.OneToOneField(Header, on_delete=models.CASCADE)
+    header = models.ForeignKey(Header, on_delete=models.CASCADE)
     driverId = models.ForeignKey(Participant, on_delete=models.CASCADE)
     frontWing = models.PositiveSmallIntegerField(default=0)                  #0
     rearWing = models.PositiveSmallIntegerField(default=0)                   #1
