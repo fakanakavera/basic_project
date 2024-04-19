@@ -429,7 +429,7 @@ class f1_22_decoder_v3:
             if self.print_numofactivecars:
                 self.print_packet(NumofActiveCars, title="NumofActiveCars")
 
-            self.driver_id = [0 for _ in len(self.total_participants)]
+            self.driver_id = [0 for _ in range(0, self.total_participants)]
 
             for p in range(0, self.total_participants):
                 ParticipantsData = self.decode_packet(data, ParticipantsData, decode_name=True)
