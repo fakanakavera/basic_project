@@ -427,6 +427,7 @@ class f1_22_decoder_v3:
             self.total_participants = NumofActiveCars[0][1]
 
             if self.print_numofactivecars:
+                print(f"Total participants: {self.total_participants}")
                 self.print_packet(NumofActiveCars, title="NumofActiveCars")
 
             self.driver_id = [0 for _ in range(0, self.total_participants)]
