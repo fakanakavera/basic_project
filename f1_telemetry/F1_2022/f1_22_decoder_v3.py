@@ -21,7 +21,7 @@ class f1_22_decoder_v3:
 
         self.decoder_loop_running = True
 
-        print(kwargs)
+        print(kwargs.get('print_numofactivecars', False))
         
         self.clear_screen = kwargs.get('clear_screen', False)
         self.print_header = kwargs.get('print_header', False)
