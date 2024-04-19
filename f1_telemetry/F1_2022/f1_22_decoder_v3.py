@@ -21,9 +21,6 @@ class f1_22_decoder_v3:
 
         self.decoder_loop_running = True
         
-        #print all kwargs
-        print(kwargs)   
-        
         self.clear_screen = kwargs.get('clear_screen', False)
         self.print_header = kwargs.get('print_header', False)
         self.print_carmotion = kwargs.get('print_carmotion', False)
