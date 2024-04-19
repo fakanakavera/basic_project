@@ -305,7 +305,7 @@ class f1_22_decoder_v3:
             except Exception as e:
                 self.log_error(message=e, event_type="Lap", data=lap_model_dict)
         
-        if self.print_packet:
+        if self.print_lap:
             self.print_packet(LapData, title="Lap")
         
     def decode_packet_3(self, packet_data:dict) -> None:
@@ -357,7 +357,7 @@ class f1_22_decoder_v3:
             except Exception as e:
                 self.log_error(message=e, event_type="CarSetup", data=carsetup_model_dict)
 
-        if self.print_packet:
+        if self.print_carsetup:
             self.print_packet(CarSetupData, title="CarSetup")
     
         
