@@ -427,7 +427,6 @@ class f1_22_decoder_v3:
             self.total_participants = NumofActiveCars[0][1]
 
             if self.print_numofactivecars:
-                print(f"Total participants: {self.total_participants}")
                 self.print_packet(NumofActiveCars, title="NumofActiveCars")
 
             self.driver_id = [0 for _ in range(0, self.total_participants)]
@@ -447,70 +446,53 @@ class f1_22_decoder_v3:
                 if self.print_participants:
                     self.print_packet(ParticipantsData, title="Participants")
 
-
-
-        # self.size = data_types[ParticipantsData[0][2]]['size']
-        # data_type = data_types[ParticipantsData[0][2]]['format']
-        # packet_size = data[self.index:self.index+self.size]
-        # ParticipantsData[0][1] = unpack('<' + data_type, packet_size)[0]
-        
-        # self.index += self.size
-        # self.total_participants = ParticipantsData[0][1]
-    
-        # for p in range(0, self.total_participants):
-        #     for x in range(1, len(ParticipantsData)):
-            
-        #         self.size = data_types[ParticipantsData[x][2]]['size']
-        #         ParticipantsData[x][1] = unpack(
-        #             '<' + data_types[ParticipantsData[x][2]]['format'], data[self.index:self.index+self.size])[0]
-
-        #         # if ParticipantsData[x][0] == 'm_aiControlled' and ParticipantsData[x][1] == 0:
-        #         #     self.player_car_index = p
-
-        #         if ParticipantsData[x][0] == 'm_name':
-        #             ParticipantsData[x][1] = ParticipantsData[x][1].decode(
-        #                 'utf-8').rstrip('\x00')
-        #         self.index += self.size
-            
-        #     if self.save_all or self.save_participants:
-        #         try:
-        #             participant_model_dict = self.make_model_dict(ParticipantsData)
-        #             participant, _ = Participant.objects.get_or_create(header=self.header_instance, **participant_model_dict)
-        #             self.driver_id[p] = participant
-        #             participant.save()
-        #         except Exception as e:
-        #             self.log_error(message=e, event_type="Participant", data=participant_model_dict)
-
-
-
-
-
-
-
-    
-
     def decode_packet_6(self, data):
-        # os.system('cls')
-        for p in range(0, self.total_participants):
-            for x in range(0, len(CarTelemetryData)):
-                self.size = data_types[CarTelemetryData[x][2]]['size']
-                CarTelemetryData[x][1] = unpack(
-                    '<' + data_types[CarTelemetryData[x][2]]['format'], data[self.index:self.index+self.size])[0]
+        """
+            struct CarTelemetryData{
+                uint16 m_speed;                     // Speed of car in kilometres per hour
+                float m_throttle;                   // Amount of throttle applied (0.0 to 1.0)
+                float m_steer;                      // Steering (-1.0 (full lock left) to 1.0 (full lock right))
+                float m_brake;                      // Amount of brake applied (0.0 to 1.0)
+                uint8 m_clutch;                     // Amount of clutch applied (0 to 100)
+                int8 m_gear;                        // Gear selected (1-8, N=0, R=-1)
+                uint16 m_engineRPM;                 // Engine RPM
+                uint8 m_drs;                        // 0 = off, 1 = on
+                uint8 m_revLightsPercent;           // Rev lights indicator (percentage)
+                uint16 m_revLightsBitValue;         // Rev lights (bit 0 = leftmost LED, bit 14 = rightmost LED)
+                uint16 m_brakesTemperature[4];      // Brakes temperature (celsius)
+                uint8 m_tyresSurfaceTemperature[4]; // Tyres surface temperature (celsius)
+                uint8 m_tyresInnerTemperature[4];   // Tyres inner temperature (celsius)
+                uint16 m_engineTemperature;         // Engine temperature (celsius)
+                float m_tyresPressure[4];           // Tyres pressure (PSI)
+                uint8 m_surfaceType[4];             // Driving surface, see appendices
+            };
 
-                self.index += self.size
+            struct PacketCarTelemetryData{
+                PacketHeader m_header;                      // Header
+                CarTelemetryData m_carTelemetryData[22];
+                uint8 m_mfdPanelIndex;                      // Index of MFD panel open - 255 = MFD closed
+                                                            // Single player, race  0 = Car setup, 1 = Pits
+                                                            // 2 = Damage, 3 = Engine, 4 = Temperatures
+                                                            // May vary depending on game mode
+                uint8 m_mfdPanelIndexSecondaryPlayer;       // See above
+                int8 m_suggestedGear;                       // Suggested gear for the player (1-8)
+                                                            // 0 if no gear suggested
+            };
+        """
+        global CarTelemetryData
+        for p in range(0, self.total_participants):
+            CarTelemetryData = self.decode_packet(data, CarTelemetryData)
 
             if self.save_all or self.save_cartelemetry:
                 try:
                     car_telemetry_model_dict = self.make_model_dict(CarTelemetryData)
-                    car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, driverId=self.driver_id[p], **car_telemetry_model_dict)
+                    car_telemetry, _ = CarTelemetry.objects.get_or_create(header=self.header_instance, 
+                                                                          driverId=self.driver_id[p], 
+                                                                          **car_telemetry_model_dict)
                     car_telemetry.save()
                 except Exception as e:
-                    print(f"P: {p}")
-                    print(self.driver_id)
-                    print(e)
-                    print(CarTelemetryData)
-                    print('-------------------------------')
                     self.log_error(message=e, event_type="CarTelemetry", data=car_telemetry_model_dict)
             
+            if self.print_cartelemetry:
+                self.print_packet(CarTelemetryData, title="CarTelemetry")
 
-    
