@@ -21,9 +21,6 @@ def _get_trackid_from_sessionUID(sessionUID:int) -> int:
 def _get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
     """
     Retrieve all headers from the sessionUID.
-
-
-
     needs work
     """
     # fetach all headers id from the sessionUID
@@ -32,16 +29,6 @@ def _get_all_headers_from_sessionUID(sessionUID:int) -> list[int]:
         cartelemetry__lap__currentLapNum=1, 
         cartelemetry__participant__aiControlled=False).values_list('id', flat=True).distinct().order_by('id')
     return list(headerids)
-
-def _get_all_telemetry_from_driverId_headerid_range(driverId:list[int], headerid_range:tuple[int, int]) -> list[int]:
-    """
-    Retrieve all telemetry from the driverId and headerid range.
-    """
-    # fetch all telemetry from the driverId and headerid range
-    telemetryids = CarTelemetry.objects.filter(
-        header__id__range=headerid_range, 
-        driverId__in=driverId).values_list('id', flat=True).distinct().order_by('id')
-    return list(telemetryids)
 
 def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
     """
@@ -54,6 +41,19 @@ def _get_first_last_header_from_sessionUID(sessionUID:int) -> tuple[int, int]:
     )
     return result['first_id'], result['last_id']
 
+def _get_headerid_range_from_sessionUID_lap(sessionUID:int, lap:int) -> tuple[int, int]:
+    """
+    Retrieve the headerid range from the sessionUID and lap.
+    """
+    # fetch the headerid range from the sessionUID and lap
+    result = Header.objects.filter(
+        sessionUID=sessionUID, 
+        lap__currentLapNum=lap).aggregate(
+            first_id=Min('id'), 
+            last_id=Max('id')
+        )
+    return result['first_id'], result['last_id']
+
 def _get_driverid_from_headerid_range(headerid_range:tuple[int, int], driver_num:int) -> list[int]:
     """
     Retrieve the driverId from the headerid range.
@@ -61,6 +61,16 @@ def _get_driverid_from_headerid_range(headerid_range:tuple[int, int], driver_num
     # fetch the driverId from the headerid range
     driverids = Participant.objects.filter(header__id__range=headerid_range, raceNumber=driver_num).values_list('id', flat=True).distinct()
     return list(driverids)
+
+def _get_all_telemetry_from_driverId_headerid_range(driverId:list[int], headerid_range:tuple[int, int]) -> list[int]:
+    """
+    Retrieve all telemetry from the driverId and headerid range.
+    """
+    # fetch all telemetry from the driverId and headerid range
+    telemetryids = CarTelemetry.objects.filter(
+        header__id__range=headerid_range, 
+        driverId__in=driverId).distinct().order_by('id')
+    return list(telemetryids)
 
 def _test_api(sessionUID:int, lap_num:int) -> list[int]:
 
